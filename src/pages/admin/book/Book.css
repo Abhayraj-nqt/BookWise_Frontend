@@ -1,0 +1,20 @@
+.book-page {
+    width: 100%;
+}
+
+.book-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.book-list {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.close-btn {
+    margin-top: 1rem;
+}

@@ -1,0 +1,110 @@
+/* Container to make table responsive */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+
+  background: white;
+  border-radius: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0rem 1rem;
+
+}
+
+/* Basic Table Styles */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 1rem;
+  color: var(--color-text-dark);
+}
+
+.table th,
+.table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid var(--secondary-color);
+}
+
+/* Header Styling */
+.table thead th {
+  /* background-color: var(--primary-color); */
+  /* color: var(--color-white); */
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* Body Row Styling */
+.table tbody tr {
+  background-color: var(--color-white);
+  transition: background-color 0.3s ease;
+}
+
+.table-action-btns {
+  
+}
+
+.table-action-btns span {
+  
+}
+
+.table-edit-icon {
+  margin-right: 1rem;
+  color: var(--secondary-color);
+  transition: all 0.3s ease;
+}
+
+.table-edit-icon:hover {
+  color: var(--color-text-dark);
+}
+
+.table-delete-icon {
+  margin-left: 1rem;
+  color: var(--primary-color);
+  transition: all 0.3s ease;
+}
+
+.table-delete-icon:hover {
+  color: #ec2341;
+  color: red;
+}
+
+/* Hover Effect for Rows */
+/* .table tbody tr:hover {
+  background-color: var(--primary-color-light);
+} */
+
+/* Alternating Row Colors */
+/* .table tbody tr:nth-child(even) {
+  background-color: var(--secondary-color-light);
+} */
+
+/* Responsive Font Sizes */
+@media (max-width: 768px) {
+  .table th,
+  .table td {
+    font-size: 0.875rem;
+  }
+}
+
+/* Status Column Specific Styling */
+/* .table tbody td:last-child {
+  font-weight: 700;
+} */
+
+/* Custom Status Colors */
+/* .table tbody td:last-child:before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+  background-color: var(--secondary-color);
+} */
+
+/* .table tbody tr td:last-child:before {
+  background-color: var(--primary-color);
+} */
