@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 // CSS
 import './Book.css'
@@ -7,20 +7,26 @@ import './Book.css'
 import DashboardHOC from '../../../components/HOC/dashboardHOC/DashboardHOC'
 import Searchbar from '../../../components/searchbar/Searchbar'
 import Button from '../../../components/button/Button'
-import Popup from '../../../components/popup/Popup'
-import Input from '../../../components/form/input/Input'
-import Select from '../../../components/form/select/Select'
 import Table from '../../../components/table/Table'
 
 import { CiFilter } from "react-icons/ci";
+import { BsFilterLeft } from "react-icons/bs";
+import { FilterIcon } from '../../../components/icons/Icons'
+import BookPopup from '../../../components/popup/BookPopup'
+import { useSelector } from 'react-redux'
+import { getAllCategories } from '../../../api/services/category'
+import { createBook, getAllBooks, removeBook, updateBook } from '../../../api/services/book'
+import toast from '../../../components/toast/toast'
+import Sheet from '../../../components/sheet/Sheet'
+import BookFilterPopup from '../../../components/popup/BookFilterPopup'
 
-const initialCategories = [
-  { id: 1, name: 'History' },
-  { id: 2, name: 'Politics' },
-  { id: 3, name: 'Geography' },
-  { id: 4, name: 'Math' },
-  { id: 5, name: 'Science' }
-]
+// const initialCategories = [
+//   { id: 1, name: 'History' },
+//   { id: 2, name: 'Politics' },
+//   { id: 3, name: 'Geography' },
+//   { id: 4, name: 'Math' },
+//   { id: 5, name: 'Science' }
+// ]
 
 const bookCols = ['Id', 'Title', 'Author', 'Avl. Qty', 'Category'];
 
@@ -34,9 +40,12 @@ const initalBooks = [
 
 const Book = () => {
 
-  const iconSize = 20;
+  // const iconSize = 20;
+
+  const auth = useSelector(state => state.auth);
 
   const [bookData, setBookData] = useState({
+    id: '',
     title: '',
     author: '',
     avlQty: '',
@@ -44,88 +53,205 @@ const Book = () => {
     category: '',
   })
 
-  const [categories, setCategories] = useState(initialCategories);
-  const [books, setBooks] = useState(initalBooks)
+  const [categories, setCategories] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(5);
+  const [sortBy, setSortBy] = useState('id');
+  const [sortDir, setSortDir] = useState('asc');
+  const [search, setSearch] = useState('')
 
+  // const [categories, setCategories] = useState(initialCategories);
+  const [books, setBooks] = useState([])
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const openPopup = () => setIsPopupOpen(true);
   const closePopup = () => setIsPopupOpen(false);
 
-  const _setBookData = (book) => {
-    setBookData({
-      title: book.title,
-      author: book.author,
-      avlQty: book.avlQty,
-      category: book.category.name,
-      image: book.image,
-    })
-  }
+  const openFilter = () => setIsFilterOpen(true);
+  const closeFilter = () => setIsFilterOpen(false);
 
-  const handleChange = (e) => {
-    setBookData({ ...bookData, [e.target.name]: e.target.value });
-  }
+  const toggleSheet = () => setIsSheetOpen(prev => !prev);
 
-  const handleEdit = (bookObj) => {
-    bookObj.category = Number(bookObj.category);
-    bookObj.avlQty = Number(bookObj.avlQty);
-    console.log('UPDATE', bookObj);
-  }
+  // useEffect(() => {
+  //   loadCategories();
+  // }, [])
 
-  const handleDelete = (id) => {
-    if (window.confirm('Are you really want to delete?')) {
-      console.log('DELETE', id);
+  useEffect(() => {
+    loadBooks();
+  }, [page, size, sortBy, sortDir])
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      loadBooks();
+    }, 3000)
+
+    return () => clearTimeout(timeout);
+  }, [search])
+
+
+  // const loadCategories = async () => {
+  //   try {
+  //     const {data} = await getAllCategories(undefined, undefined, 'name', 'asc')
+  //     console.log(data);
+  //     setCategories(data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+
+  const loadBooks = async () => {
+    try {
+      const {data} = await getAllBooks(page, size, sortBy, sortDir, search, auth.token);
+      console.log(data);
+      
+      if (Array.isArray(data)) {
+        setBooks(data);
+      } else {
+        setBooks(data.content);
+        setTotalPages(data.totalPages);
+      }
+    } catch (error) {
+      console.log('Error fetching books', error);
     }
   }
 
-  const handleAddNewBook = () => {
-    // bookData.image = null;
-    bookData.category = Number(bookData.category);
-    bookData.avlQty = Number(bookData.avlQty);
-    console.log('ADD', bookData);
+  // const _setBookData = (book) => {
+  //   setBookData({
+  //     title: book.title,
+  //     author: book.author,
+  //     avlQty: book.avlQty,
+  //     category: book.category.name,
+  //     image: book.image,
+  //   })
+  // }
+
+  // const handleChange = (e) => {
+  //   setBookData({ ...bookData, [e.target.name]: e.target.value });
+  // }
+
+  const handleEdit = async (bookObj) => {
+    // bookObj.category = Number(bookObj.category);
+    // bookObj.avlQty = Number(bookObj.avlQty);
+    // console.log('UPDATE', bookObj);
+
+    // const newBook = {
+    //   title: bookObj.title,
+    //   author: bookObj.author,
+    //   avlQty: bookObj.avlQty,
+    //   image: bookObj.image,
+    //   category: bookObj.category,
+    // }
+
+    const id = bookObj?.id;
+    delete bookObj?.id;
+    
+    try {
+      const { data } = await updateBook(id, bookObj, auth.token);
+      await loadBooks();
+      closePopup();
+      toast.success(`Successfully updated`);
+    } catch (error) {
+      console.log(error);
+      closePopup();
+      toast.error(`Failed to update`)
+    }
   }
 
-  const handleSearch = (e) => {
-    const query = e.target.value.toLowerCase();
-    const filteredBooks = initalBooks.filter(book => book.title.toLowerCase().includes(query));
-    setBooks(filteredBooks);
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you really want to delete?')) {
+      try {
+        const { data } = await removeBook(id, auth.token);
+        await loadBooks();
+        toast.success(`${data?.title} is deleted`);
+      } catch (error) {
+        console.log(error);
+        toast.error('Failed to delete.');
+      }
+    }
+  }
+
+  const handleAddNewBook = async (bookObj) => {
+    // bookData.image = null;
+    // setBookData(bookObj);
+    // bookData.category = Number(bookData.category);
+    // bookData.avlQty = Number(bookData.avlQty);
+    // console.log('ADD', bookData);
+    delete bookObj?.id;
+    console.log('ADD', bookObj);
+
+    try {
+      const {data} = await createBook(bookObj, auth?.token);
+      setBookData({
+        id: '',
+        title: '',
+        author: '',
+        avlQty: '',
+        image: '',
+        category: '',
+      })
+      closePopup();
+      await loadBooks();
+      toast.success(`${data?.title} is added`);
+    } catch (error) {
+      console.log(error);
+      closePopup();
+      toast.error(`Failed to add ${bookObj?.title}`);
+    }
+    
+  }
+
+  const handleSort = (col, isDesc) => {
+    const colMapping = {
+      'Id': 'id',
+      'Title': 'title',
+      'Author': 'author',
+      'Avl. Qty': 'avlQty',
+      'Category': 'category',
+    }
+
+    setSortBy(colMapping[col]);
+    if (isDesc) {
+      setSortDir('desc');
+    } else {
+      setSortDir('asc');
+    }
+  }
+
+  const handleSearch = (searchQuery) => {
+    setSearch(searchQuery);
   };
+
+  const handleFilter = (filterObj) => {
+    // TODO - Make an api call to fetch filtered data
+    console.log(filterObj);
+  }
 
   return (
     <div className='book-page'>
       <div className="book-header">
-        {/* <div className="filter-section"> */}
-          <Searchbar placeholder={'Search book'} />
-          {/* <div className="filter-icon">
+        <div className="filter-section">
+          <Searchbar placeholder={'Search book'} onSearch={handleSearch} />
+          <div onClick={openFilter} className="filter-icon">
             <span>Filter</span>
-            <CiFilter size={25} />
-          </div> */}
-        {/* </div> */}
+            <FilterIcon size={20} />
+          </div>
+        </div>
 
         <Button onClick={openPopup} varient={'primary'} >Add</Button>
       </div>
       <br />
 
       <div className="">
-        <Table colums={bookCols} data={initalBooks} addDelete={true} addEdit={true} onEdit={handleEdit} onDelete={handleDelete} />
+        <Table colums={bookCols} data={books} currentPage={page} totalPages={totalPages} onPageChange={setPage} sortBy={'Id'} onSort={handleSort} addDelete={true} addEdit={true} onEdit={handleEdit} onDelete={handleDelete} type={'book'} />
       </div>
 
-      <Popup isOpen={isPopupOpen} title={'Add book'} onClose={closePopup} >
+      
 
-        <Input type={'text'} value={bookData.title} name={'title'} onChange={(e) => handleChange(e)} lable={'Title'} placeholder={'Enter book title'} />
-        <Input type={'text'} value={bookData.author} name={'author'} onChange={(e) => handleChange(e)} lable={'Author'} placeholder={'Enter author name'} />
-        <Input type={'number'} value={bookData.avlQty} name={'avlQty'} onChange={(e) => handleChange(e)} lable={'Quantity'} placeholder={'Enter book quantity'} />
-        <Select lable={'Category'} name={'category'} value={bookData.category} onChange={(e) => handleChange(e)} placeholder={'Select category'} required={true} >
-          <option defaultValue={undefined} value={undefined}>Select category</option>
-          {categories.map(category => <option key={category.id} value={category.id}>{category.name}</option>)}
-        </Select>
-        {/* <Input type={'text'} value={bookData.image} name={'image'} onChange={(e) => handleChange(e)} lable={'Image'} placeholder={'Upload image'} /> */}
-
-        <div className="book-update-btn">
-          <Button onClick={() => handleAddNewBook()} varient={'primary'} >Add</Button>
-        </div>
-      </Popup>
-
+      <BookPopup title={'Add book'} isPopupOpen={isPopupOpen} closePopup={closePopup} onAdd={handleAddNewBook} book={bookData} type='add' />
+      <BookFilterPopup title={'Filter books'} isPopupOpen={isFilterOpen} closePopup={closeFilter} onFilter={handleFilter} />
     </div>
   )
 }
