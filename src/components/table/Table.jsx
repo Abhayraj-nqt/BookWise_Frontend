@@ -4,84 +4,91 @@ import React, { useState } from 'react'
 import './Table.css'
 
 // Components
-import Popup from '../popup/Popup'
-import Input from '../form/input/Input'
-import Select from '../form/select/Select'
-import Button from '../button/Button'
 import { DeleteIcon, EditIcon } from '../icons/Icons'
+import CategoryPopup from '../popup/CategoryPopup'
+import BookPopup from '../popup/BookPopup'
+import Pagination from '../pagination/Pagination'
 
-const initialCategories = [
-    { id: 1, name: 'History' },
-    { id: 2, name: 'Politics' },
-    { id: 3, name: 'Geography' },
-    { id: 4, name: 'Math' },
-    { id: 5, name: 'Science' }
-  ]
+import { TiArrowUnsorted } from "react-icons/ti";
+import { FaEye } from "react-icons/fa";
+import { FiEye } from "react-icons/fi";
+import { IssuanceIcon } from '../icons/Icons'
+import UserPopup from '../popup/UserPopup'
+import Button from '../button/Button'
+import Sheet from '../sheet/Sheet'
+import BookSheet from '../sheet/BookSheet'
+import UserSheet from '../sheet/UserSheet'
+import IssuancePopup from '../popup/IssuancePopup'
 
-const Table = ({ colums=[], data=[], addEdit=false, addDelete=false, onEdit, onDelete, iconSize = 25, type}) => {
+const Table = ({ colums=[], data=[], currentPage=0, totalPages=1, onPageChange='', sortBy='id', sortDir='asc', onSort='', addEdit=false, addDelete=false, onEdit, onDelete, iconSize = 25, type}) => {
 
-    const [bookData, setBookData] = useState({
-        id: '',
-        title: '',
-        author: '',
-        avlQty: '',
-        image: '',
-        category: '',
-    });
-    const [categories, setCategories] = useState(initialCategories);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-    const openPopup = () => setIsPopupOpen(true);
-    const closePopup = () => setIsPopupOpen(false);
+    const [popupData, setPopupData] = useState(null);
+    const [sheetData, setSheetData] = useState(null);
 
-    const _setBookData = (book) => {
-        setBookData({
-            id: book.id,
-          title: book.title,
-          author: book.author,
-          avlQty: book.avlQty,
-          category: book.category.name,
-          image: book.image,
-        })
+    const [isDesc, setIsDesc] = useState(false);
+
+    const handleSheet = (row) => {
+        // setIsSheetOpen(prev => !prev);
+        toggleSheet();
+        setSheetData(row);
     }
 
-    const handleChange = (e) => {
-        setBookData({ ...bookData, [e.target.name]: e.target.value });
+    const toggleSheet = () => setIsSheetOpen(prev => !prev);
+
+    const toggleOrder = () => {
+        setIsDesc(prev => !prev);
+    }
+
+    const handleSort = (col) => {
+        toggleOrder();
+        onSort(col, isDesc);
+    }
+
+    // const openPopup = () => setIsPopupOpen(true);
+    const openPopup = (row) => {
+        setPopupData(row);
+        setIsPopupOpen(true);
+    }
+    const closePopup = () => {
+        setPopupData(null);
+        setIsPopupOpen(false);
+    }
+
+    const handleEdit = (row) => {
+        openPopup(row);
     }
 
     const getPopup = () => {
+
         if (type === 'category') {
             return (
-
-                <Popup isOpen={isPopupOpen} title={'Edit category'} onClose={closePopup} >
-                    <Input type={'text'} value={name} onChange={(e) => setName(e.target.value)} lable={'Name'} placeholder={'Enter category name'} />
-                    <div className="cat-update-btn">
-                        <Button onClick={() => onEdit(category.id, name)} varient={'primary'} >Update</Button>
-                    </div>
-                </Popup>
-
+                <CategoryPopup title={'Edit category'} category={popupData} isPopupOpen={isPopupOpen} closePopup={closePopup} onEdit={onEdit} type='edit'  />
             )
         } else if (type === 'book') {
+
             return (
-
-                <Popup isOpen={isPopupOpen} title={'Edit book'} onClose={closePopup} >
-                    <Input type={'text'} value={bookData.title} name={'title'} onChange={(e) => handleChange(e)} lable={'Title'} placeholder={'Enter book title'} />
-                    <Input type={'text'} value={bookData.author} name={'author'} onChange={(e) => handleChange(e)} lable={'Author'} placeholder={'Enter author name'} />
-                    <Input type={'number'} value={bookData.avlQty} name={'avlQty'} onChange={(e) => handleChange(e)} lable={'Quantity'} placeholder={'Enter book quantity'} />
-                    <Select lable={'Category'} name={'category'} value={bookData.category} onChange={(e) => handleChange(e)} placeholder={'Select category'} >
-                        {categories.map(category => <option key={category.id} value={category.id}>{category.name}</option>)}
-                    </Select>
-                    {/* <Input type={'text'} value={bookData.image} name={'image'} onChange={(e) => handleChange(e)} lable={'Image'} placeholder={'Upload image'} /> */}
-                    <div className="book-update-btn">
-                        <Button onClick={() => onEdit(bookData)} varient={'primary'} >Update</Button>
-                    </div>
-                </Popup>
-
+                <BookPopup title={'Edit book'} book={popupData} isPopupOpen={isPopupOpen} onEdit={onEdit} closePopup={closePopup} type='edit' />
             )
-        } else if (type === 'user') {
 
-        } else {
-            return ''
+        } else if (type === 'user') {
+            return (
+                <UserPopup title={'Edit user'} user={popupData} isPopupOpen={isPopupOpen} closePopup={closePopup} onEdit={onEdit} type='edit'  />
+            )
+        } else if (type === 'issuance') {
+            return (
+                <IssuancePopup title={'Edit issuace'} issuance={popupData} isPopupOpen={isPopupOpen} closePopup={closePopup} onEdit={onEdit} type='edit' />
+            )
+        }
+    }
+
+    const getSheet = () => {
+        if (type === 'book') {
+            return <BookSheet isSheetOpen={isSheetOpen} onClose={toggleSheet} bookData={sheetData} />
+        } else if (type === 'user') {
+            return <UserSheet isSheetOpen={isSheetOpen} onClose={toggleSheet} userData={sheetData} />
         }
     }
 
@@ -92,44 +99,80 @@ const Table = ({ colums=[], data=[], addEdit=false, addDelete=false, onEdit, onD
                 <table className="table">
                     <thead>
                         <tr>
-                            {colums.map((cols, i) => (
-                                <th key={`${cols}-${i}`}>{cols}</th>
+                            {colums.map((col, i) => (
+                                <th key={`${col}-${i}`}  >
+                                    <span>{col}</span>
+                                    {onSort && <span onClick={() => handleSort(col)} className='table-sort-btn pointer'><TiArrowUnsorted size={15} /></span>}
+                                </th>
                             ))}
                             {(addEdit || addDelete) && <th>Actions</th>}
+                            {(type === 'user' || type === 'book') && <th className='book-action-th'>Books</th>}
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map((row, i) => (
+                        {data?.map((row, i) => (
                             <tr key={`${i}-${row?.id}`} >
-                                {Object.entries(row).map(([key, value]) => (
-                                    key !== 'image' && (typeof value === 'object' ? <td key={key}>{value?.name}</td> : <td key={key}>{value} </td>)
-                                ))}
+
+                                {Object.entries(row).map(([key, value]) => {
+                                    if (key === 'image' || key === 'role' || Boolean(key) === false) {
+                                        console.log({key, value}); 
+                                        return null; 
+                                    } else {
+                                        // if (type === 'issuance') {
+                                        //     const 
+                                        // } else {
+
+                                        // }
+                                        return (
+                                            type === 'issuance'
+                                                ? <td key={key}>
+                                                    {typeof value === 'object' 
+                                                        ? value?.name || value?.title 
+                                                        : (key === 'issueTime' || key === 'returnTime') ? (
+                                                            <div className="">
+                                                                <div className="">{new Date(value).toLocaleDateString('en-GB')}</div>
+                                                                <div className="">{new Date(value).toLocaleTimeString()}</div>
+                                                            </div>
+                                                        ) : value}
+                                                </td>
+                                                : value && <td key={key}>
+                                                    {typeof value === 'object' ? value?.name || value?.title : value}
+                                                </td>
+                                        );
+                                    }
+
+                                })}
+
                                 {(addEdit || addDelete) && <td className='table-action-btns'>
-                                    {addEdit && <span onClick={() => { openPopup(true); _setBookData(row) }} className='table-edit-icon icon'><EditIcon size={iconSize} /></span>}
-                                    {addDelete && <span onClick={() => onDelete(row.id)} className='table-delete-icon icon'><DeleteIcon size={iconSize} /></span>}
+                                    {addEdit && <span onClick={() => handleEdit(row)} className='table-edit-icon icon'><EditIcon size={iconSize} /></span>}
+                                    {type != 'user' && addDelete && <span onClick={() => onDelete(row?.id)} className='table-delete-icon icon'><DeleteIcon size={iconSize} /></span>}
+                                    {type == 'user' && addDelete && <span onClick={() => onDelete(row?.mobileNumber)} className='table-delete-icon icon'><DeleteIcon size={iconSize} /></span>}
                                 </td>}
+
+                                {(type === 'user' || type === 'book') && 
+                                    <td className=''>
+                                        <span className="assign-btn">
+                                            {/* <IssuanceIcon size={25} /> */}
+                                            <Button onClick={() => handleSheet(row)} type={'button'} varient={'primary'}>Issue</Button>
+                                        </span>
+                                        <span className="view-btn">
+                                            {/* <FiEye size={25} /> */}
+                                            <Button type={'button'} varient={'secondary'}>View</Button>
+                                        </span>
+                                    </td>
+                                }
+
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
+            <div className="">
+                <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
+            </div>
 
-            {/* <Popup /> */}
-            
-            {/* <Popup isOpen={isPopupOpen} title={'Edit book'} onClose={closePopup} >
-                <Input type={'text'} value={bookData.title} name={'title'} onChange={(e) => handleChange(e)} lable={'Title'} placeholder={'Enter book title'} />
-                <Input type={'text'} value={bookData.author} name={'author'} onChange={(e) => handleChange(e)} lable={'Author'} placeholder={'Enter author name'} />
-                <Input type={'number'} value={bookData.avlQty} name={'avlQty'} onChange={(e) => handleChange(e)} lable={'Quantity'} placeholder={'Enter book quantity'} />
-                <Select lable={'Category'} name={'category'} value={bookData.category} onChange={(e) => handleChange(e)} placeholder={'Select category'} >
-                    {categories.map(category => <option key={category.id} value={category.id}>{category.name}</option>)}
-                </Select>
-
-                <Input type={'text'} value={bookData.image} name={'image'} onChange={(e) => handleChange(e)} lable={'Image'} placeholder={'Upload image'} />
-
-                <div className="book-update-btn">
-                    <Button onClick={() => onEdit(bookData)} varient={'primary'} >Update</Button>
-                </div>
-            </Popup> */}
+            {getSheet()}
+            {getPopup()}
         </>
     )
 }
