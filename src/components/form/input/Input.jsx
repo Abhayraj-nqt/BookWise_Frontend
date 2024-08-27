@@ -1,7 +1,7 @@
 import React from 'react'
 import './Input.css'
 
-const Input = ({type='text', name='', value='', onChange, lable, placeholder, className, textarea = false, rows=10, required=false}) => {
+const Input = ({type='text', name='', value='', onChange, lable, placeholder, className, textarea = false, rows=10, required=false, error=''}) => {
   return (
     <div className='form-input-wraper'>
         {lable && <label htmlFor="">{lable}</label>}
@@ -10,6 +10,7 @@ const Input = ({type='text', name='', value='', onChange, lable, placeholder, cl
           :
           <textarea className={`${className}`} onChange={onchange} value={value} name={name} placeholder={placeholder} rows={rows} required={required} />
         }
+        {error && <span className="error-message">{error}</span>}
     </div>
   )
 }

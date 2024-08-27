@@ -17,8 +17,23 @@ export const getTotalUserCount = async (token) => {
     })
 }
 
-export const getAllUsers = async (token) => {
+export const getActiveUserCount = async (token) => {
+    return await app.get(`/api/users/active-count`, {
+        headers: {
+            Authorization: token,
+        }
+    });
+}
+
+export const getAllUsers = async (page, size, sortBy, sortDir, search, token) => {
     return await app.get(`/api/users`, {
+        params: {
+            page: page,
+            size: size,
+            sortBy: sortBy,
+            sortDir: sortDir,
+            search: search,
+        },
         headers: {
             Authorization: token,
         }

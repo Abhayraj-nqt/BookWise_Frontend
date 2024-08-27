@@ -1,28 +1,24 @@
-import React, {useState} from 'react'
-import { useNavigate } from 'react-router-dom'
-import { GoSearch } from "react-icons/go";
+import React, {useEffect, useState} from 'react'
+import { SearchIcon } from '../icons/Icons';
 import './Searchbar.css'
 
-const Searchbar = ({placeholder}) => {
+const Searchbar = ({placeholder, onSearch, varient='primary', clearInput=false, icon=true}) => {
 
-    const navigate = useNavigate();
-    const [searchQuery, setSearchQuery] = useState()
+    const [searchQuery, setSearchQuery] = useState('')
 
-    const handleChange = (e) => {
-        setSearchQuery(e.target.value);
-    }
-
-    const handleSerach = () => {
-        // TODO - Write logic to show items based on search query
-        console.log('Serching for', searchQuery, ' ...');
-    }
+    useEffect(() => {
+      if (clearInput) {
+        setSearchQuery('');
+      }
+    }, [clearInput])
 
   return (
     <div className='search-bar'>
-        <input onChange={handleChange} type="text" value={searchQuery} placeholder={placeholder} />
-        <div onClick={handleSerach} className="search-icon">
-            <GoSearch size={20} />
-        </div>
+        {/* <input onChange={(e) => setSearchQuery(e.target.value)} type="text" value={searchQuery} placeholder={placeholder} /> */}
+        <input onChange={(e) => {setSearchQuery(e.target.value); onSearch(e.target.value)}} className={`${varient === 'primary' ? 'bg-white' : 'bg-gray'}`} type="text" value={searchQuery} placeholder={placeholder}  />
+        {icon && <div onClick={() => onSearch(searchQuery)} className="search-icon">
+            <SearchIcon size={20} />
+        </div>}
     </div>
   )
 }

@@ -80,7 +80,7 @@ const Navbar = () => {
             <div onMouseLeave={hideDropdown} className="dropdown-content">
               <Link to={'/account'}>Account</Link>
               {auth && auth.role === 'ROLE_ADMIN' ? <Link to={'/admin/dashboard'}>Dashboard</Link> : <Link to={'/user/history'}>History</Link>}
-              <div className="" onClick={handleLogout} >Logout</div>
+              <div className="drop-logout" onClick={handleLogout} >Logout</div>
             </div>)}
           </div>}
 

@@ -13,6 +13,7 @@ import Button from '../../components/button/Button'
 import { login } from '../../api/services/auth'
 import { loginUser } from '../../redux/auth/authActions'
 import toast from '../../components/toast/toast'
+import { validateEmailOrMobile, validatePassword } from '../../libs/utils'
 
 // Constants
 import { images } from '../../libs/constants'
@@ -28,6 +29,11 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('')
 
+  const [errors, setErrors] = useState({
+    username: '',
+    password: ''
+  });
+
   useEffect (() => {
     if (auth && auth.token) {
       if (auth.role === 'ROLE_ADMIN') {
@@ -40,6 +46,25 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validation
+    // let isValid = true;
+    // const newErrors = { username: '', password: '' };
+
+    // if (!validateEmailOrMobile(username)) {
+    //   newErrors.username = 'Enter a valid email or 10-digit mobile number.';
+    //   isValid = false;
+    // }
+
+    // if (!validatePassword(password)) {
+    //   newErrors.password = 'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.';
+    //   isValid = false;
+    // }
+
+    // if (!isValid) {
+    //   setErrors(newErrors);
+    //   return;
+    // }
     
     try {
       const { data } = await login(username, password);
@@ -65,8 +90,8 @@ const Login = () => {
           : <h2 className='' style={{color: 'red'}}>Loading ...</h2>
         }
         <br />
-        <Input onChange={(e) => setUsername(e.target.value)} type='text' name='username' value={username} lable={'Username:'} placeholder={'Enter your username'} required />
-        <Input onChange={(e) => setPassword(e.target.value)} type='text' name='password' value={password} lable={'Password:'} placeholder={'Enter your password'} required />
+        <Input onChange={(e) => setUsername(e.target.value)} type='text' name='username' value={username} lable={'Username:'} placeholder={'Enter your username'} error={errors.username} />
+        <Input onChange={(e) => setPassword(e.target.value)} type='text' name='password' value={password} lable={'Password:'} placeholder={'Enter your password'} error={errors.password}  />
         <div className="login-btn">
           <Button type={'submit'} varient={'primary'}  >Login</Button>
         </div>

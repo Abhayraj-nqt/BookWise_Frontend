@@ -2,9 +2,9 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  /* margin: 0.5rem; */
   margin-bottom: 1rem;
+  /* gap: 0.5rem; */
+  /* height: 6rem; */
 }
 
 label {
@@ -38,6 +38,12 @@ textarea, input {
 
 textarea {
   resize: none;
+}
+
+.error-message {
+  color: var(--primary-color);
+  font-size: 0.75rem;
+
 }
 
 

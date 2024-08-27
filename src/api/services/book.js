@@ -1,12 +1,49 @@
 import app from '../apiClient';
 
 // GET books
+export const getAllBooks = async (page, size, sortBy, sortDir, search, token) => {
+    return await app.get(`/api/books`, {
+        params: {
+            page: page,
+            size: size,
+            sortBy: sortBy,
+            sortDir: sortDir,
+            search: search,
+        },
+        headers: {
+            Authorization: token,
+        }
+    });
+}
+
+export const getBookTitleCount = async (token) =>  {
+    return await app.get(`/api/books/title-count`, {
+        headers: {
+            Authorization: token,
+        }
+    });
+}
+
+export const getTotalBookCount = async (token) =>  {
+    return await app.get(`/api/books/total-count`, {
+        headers: {
+            Authorization: token,
+        }
+    });
+}
+
+
+
 export const getBookById = async (id) => {
     return await app.get(`/api/book/${id}`);
 }
 
-export const getBookByTitle = async (title) => {
-    return await app.get(`/api/book/title/${title}`)
+export const getBookByTitle = async (title, token) => {
+    return await app.get(`/api/book/title/${title}`, {
+        headers: {
+            Authorization: token
+        }
+    })
 }
 
 export const getBooksByCategoryId = async (categoryId) => {

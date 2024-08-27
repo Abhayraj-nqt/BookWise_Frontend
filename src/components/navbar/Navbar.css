@@ -34,7 +34,8 @@
 .nav-links-container {
   display: flex;
   /* gap: 1rem; */
-  justify-content: space-evenly;
+  /* justify-content: space-evenly; */
+  justify-content: end;
   width: 100%;
   max-width: 20rem;
 }
@@ -143,12 +144,21 @@
   gap: 0.5rem;
   font-size: 1rem;
   font-weight: 400;
-  /* transition: all 1s; */
+  transition: all 0.3s;
 }
 
-.dropdown-content a {
+/* .dropdown-content:hover {
+  
+} */
+
+.dropdown-content a, .drop-logout {
   color: var(--color-text-dark);
   text-decoration: none;
+  transition: all 0.3s;
+}
+
+.dropdown-content a:hover, .drop-logout:hover {
+  color: var(--primary-color);
 }
 
 @media screen and (width <= 768px) {

@@ -17,6 +17,7 @@ import Input from '../../components/form/input/Input'
 // import BookIcon from '../../components/icons/BookIcon'
 
 import { AccountIcon, BookIcon, CategoryIcon, HomeIcon, IssuanceIcon, UserIcon, ArrowDownIcon, DeleteIcon, EditIcon, InfoIcon, AlertIcon, ErrorIcon, SuccessIcon } from '../../components/icons/Icons'
+import Sheet from '../../components/sheet/Sheet'
 
 const Test = () => {
 
@@ -24,12 +25,17 @@ const Test = () => {
 
   const openPopup = () => setIsPopupOpen(true);
   const closePopup = () => setIsPopupOpen(false);
-  
+
+  const [isSheetOpen, setSheetOpen] = useState(false);
+
+  const toggleSheet = () => {
+    setSheetOpen(!isSheetOpen);
+  };
 
   return (
     <div>
-      
-      <div className="btns" style={{justifyContent: 'center', display: 'flex', gap: '1rem'}}>
+
+      <div className="btns" style={{ justifyContent: 'center', display: 'flex', gap: '1rem' }}>
         <Button varient={'primary'} c>Button</Button>
         <Button varient={'secondary'}>Button</Button>
         <Button>Button</Button>
@@ -73,6 +79,14 @@ const Test = () => {
         <p>This is an example of a reusable popup component.</p>
         <button onClick={closePopup} className='button-primary' >Close</button>
       </Popup>
+
+      <div className="my-sheet">
+        <button onClick={toggleSheet}>Toggle Sheet</button>
+        <Sheet isOpen={isSheetOpen} onClose={toggleSheet} >
+          <h2>Sheet Content</h2>
+          <p>This is the content inside the sheet.</p>
+        </Sheet>
+      </div>
 
     </div>
   )

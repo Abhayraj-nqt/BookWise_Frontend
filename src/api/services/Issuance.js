@@ -1,6 +1,21 @@
 import app from '../apiClient';
 
 // GET issuance
+export const getAllIssuances = async (page, size, sortBy, sortDir, search, token) => {
+    return await app.get(`/api/issuances`, {
+        params: {
+            page: page,
+            size: size,
+            sortBy: sortBy,
+            sortDir: sortDir,
+            search: search,
+        },
+        headers: {
+            Authorization: token,
+        }
+    });
+}
+
 export const getIssuanceById = async (id, token) => {
     return await app.get(`/api/issuance/${id}`, {
         headers: {
