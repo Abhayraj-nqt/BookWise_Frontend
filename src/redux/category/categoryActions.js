@@ -1,4 +1,12 @@
-import { ADD_CATEGORY, REMOVE_CATEGORY, UPDATE_CATEGORY } from "./categoryTypes";
+import { ADD_CATEGORY, DELETE_CATEGORY, UPDATE_CATEGORY, SET_CATEGORIES } from "./categoryTypes";
+
+
+export const setCategories = (categories) => {
+    return {
+        type: SET_CATEGORIES,
+        payload: categories,
+    }
+}
 
 export const addCategory = (category) => {
     return {
@@ -7,14 +15,14 @@ export const addCategory = (category) => {
     }
 }
 
-export const removeCategory = (id) => {
+export const deleteCategory = (id) => {
     return {
-        type: REMOVE_CATEGORY,
+        type: DELETE_CATEGORY,
         payload: id,
     }
 }
 
-export const updateCategory = (category) => {
+export const updateCategoryAction = (category) => {
     return {
         type: UPDATE_CATEGORY,
         payload: category,

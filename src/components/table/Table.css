@@ -2,14 +2,19 @@
 .table-responsive {
   width: 100%;
   overflow-x: auto;
+  scrollbar-width: none;
 
   background: white;
   border-radius: 0.5rem;
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
   padding: 0rem 1rem;
 
+}
+
+.table-responsive::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
 }
 
 /* Basic Table Styles */
@@ -34,6 +39,7 @@
   /* color: var(--color-white); */
   font-weight: 700;
   font-size: 1rem;
+  min-width: 8rem;
 }
 
 /* Body Row Styling */
@@ -71,6 +77,34 @@
   color: red;
 }
 
+.table-sort-btn {
+  margin-left: 0.5rem;
+  position: relative;
+  top: 2px;
+}
+
+.view-btn {
+  /* margin-left: 0.5rem; */
+  transition: all 0.3s ease;
+}
+
+.assign-btn {
+  margin-right: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+table thead .book-action-th {
+  min-width: 12.2rem;
+}
+
+.view-btn:hover {
+
+}
+
+.assign-btn:hover {
+
+}
+
 /* Hover Effect for Rows */
 /* .table tbody tr:hover {
   background-color: var(--primary-color-light);
@@ -87,6 +121,21 @@
   .table td {
     font-size: 0.875rem;
   }
+
+  .table thead th {
+    font-weight: 500;
+    font-size: 0.875rem;
+  }
+
+  .table-delete-icon {
+    /* margin-left: 0rem; */
+    position: relative;
+    /* top: 0.5rem; */
+  }
+
+  /* .table-delete-icon {
+    margin-right: 0.5rem;
+  } */
 }
 
 /* Status Column Specific Styling */
