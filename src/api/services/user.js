@@ -67,3 +67,22 @@ export const removeUser = async (mobile, token) => {
         }
     })
 }
+
+
+// USER History
+
+// BOOK History
+export const getUserHistory = async (mobile, page, size, sortBy, sortDir, search, token) => {
+    return await app.get(`/api/user/history/${mobile}`, {
+        params: {
+            page: page,
+            size: size,
+            sortBy: sortBy,
+            sortDir: sortDir,
+            search: search,
+        },
+        headers: {
+            Authorization: token,
+        }
+    })
+}

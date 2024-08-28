@@ -34,8 +34,12 @@ export const getTotalBookCount = async (token) =>  {
 
 
 
-export const getBookById = async (id) => {
-    return await app.get(`/api/book/${id}`);
+export const getBookById = async (id, token) => {
+    return await app.get(`/api/book/${id}`, {
+        headers: {
+            Authorization: token
+        }
+    });
 }
 
 export const getBookByTitle = async (title, token) => {
@@ -84,3 +88,19 @@ export const removeBook = async (id, token) => {
     })
 }
 
+
+// BOOK History
+export const getBookHistory = async (id, page, size, sortBy, sortDir, search, token) => {
+    return await app.get(`/api/book/history/${id}`, {
+        params: {
+            page: page,
+            size: size,
+            sortBy: sortBy,
+            sortDir: sortDir,
+            search: search,
+        },
+        headers: {
+            Authorization: token,
+        }
+    })
+}
