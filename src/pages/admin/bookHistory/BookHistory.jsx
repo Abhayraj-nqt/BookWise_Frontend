@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import './BookHistory'
+import './BookHistory.css'
 import DashboardHOC from '../../../components/HOC/dashboardHOC/DashboardHOC'
 import { useParams } from 'react-router-dom'
 import toast from '../../../components/toast/toast'
@@ -83,7 +83,7 @@ const BookHistory = () => {
 
   return (
         <div>
-            <h2>{book?.title}'s history</h2>
+            <h2 className='history-title'>{book?.title}'s history</h2>
             <Table colums={tableCols} data={bookHistory} currentPage={page} totalPages={totalPages} onPageChange={setPage} sortBy={'Id'} onSort={handleSort} type={'userHistory'} />
         </div>
   )

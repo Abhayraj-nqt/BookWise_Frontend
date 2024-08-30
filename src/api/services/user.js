@@ -1,8 +1,10 @@
 import app from '../apiClient';
 
+const API_USER = `/api/user`;
+
 // GET users
 export const getUserByMobile = async (mobile, token) => {
-    return await app.get(`/api/user/${mobile}`, {
+    return await app.get(`${API_USER}/${mobile}`, {
         headers: {
             Authorization: token,
         }
@@ -52,7 +54,7 @@ export const registerUser = async (user, token) => {
 
 // UPDATE user
 export const updateUser = async (mobile, user, token) => {
-    return await app.put(`/api/user/${mobile}`, user, {
+    return await app.put(`${API_USER}/${mobile}`, user, {
         headers: {
             Authorization: token,
         }
@@ -61,7 +63,7 @@ export const updateUser = async (mobile, user, token) => {
 
 // DELETE user
 export const removeUser = async (mobile, token) => {
-    return await app.delete(`/api/user/${mobile}`, {
+    return await app.delete(`${API_USER}/${mobile}`, {
         headers: {
             Authorization: token,
         }
@@ -73,7 +75,7 @@ export const removeUser = async (mobile, token) => {
 
 // BOOK History
 export const getUserHistory = async (mobile, page, size, sortBy, sortDir, search, token) => {
-    return await app.get(`/api/user/history/${mobile}`, {
+    return await app.get(`${API_USER}/history/${mobile}`, {
         params: {
             page: page,
             size: size,

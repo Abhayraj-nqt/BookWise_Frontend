@@ -15,6 +15,7 @@ import CategoryPopup from '../../../components/popup/CategoryPopup'
 import { removeCategory, createCategory, updateCategory, getAllCategories } from '../../../api/services/category'
 import { deleteCategory, addCategory, updateCategoryAction } from '../../../redux/category/categoryActions'
 import toast from '../../../components/toast/toast'
+import { validateNotEmpty } from '../../../libs/utils'
 
 const categoryCols = [
   "Id",
@@ -45,6 +46,11 @@ const Category = () => {
     id: '',
     name: '',
   })
+
+  const [errors, setErrors] = useState({
+    username: '',
+    password: ''
+  });
 
   // useEffect(() => {
   //   setCategories(allCategories);
@@ -98,7 +104,7 @@ const Category = () => {
   const closePopup = () => setIsPopupOpen(false);
 
   const handleEdit = async (categoryObj) => {
-
+    
     try {
       const { data } = await updateCategory(categoryObj.id, {"name": categoryObj?.name}, auth.token);
       // dispatch(updateCategoryAction(data));
@@ -129,7 +135,22 @@ const Category = () => {
   }
 
   const handleAddNewCategory = async (categoryObj) => {
-    console.log('ADD', categoryObj);
+
+    // validate
+    let isValid = true;
+    const newError = {name: ''};
+
+    if (!validateNotEmpty(categoryObj?.name)) {
+      newError.name = `Category name can't be empty`
+      isValid(false);
+    }
+
+    if (!isValid) {
+      setErrors(newError);
+      return;
+    }
+
+
     try {
       const { data } = await createCategory({ "name" :categoryObj?.name}, auth?.token);
       // dispatch(addCategory(data));
@@ -180,7 +201,7 @@ const Category = () => {
         <Table colums={categoryCols} data={categories} currentPage={page} totalPages={totalPages} onPageChange={setPage} sortBy={'Id'} onSort={handleSort} addEdit={true} addDelete={true} onEdit={handleEdit} onDelete={handleDelete} type={'category'}  />
       </div>
 
-      <CategoryPopup title={'Add category'} isPopupOpen={isPopupOpen} closePopup={closePopup} onAdd={handleAddNewCategory} category={categoryData} type='add'  />
+      <CategoryPopup title={'Add category'} isPopupOpen={isPopupOpen} closePopup={closePopup} onAdd={handleAddNewCategory} category={categoryData} type='add' errors={errors}  />
 
     </div>
   )

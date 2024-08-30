@@ -4,6 +4,7 @@ import Input from '../form/input/Input';
 import Select from '../form/select/Select';
 import Button from '../button/Button';
 import { getAllCategories } from '../../api/services/category';
+import { validateNotEmpty } from '../../libs/utils';
 
 // const initialCategories = [
 //     { id: 1, name: 'History' },
@@ -13,6 +14,13 @@ import { getAllCategories } from '../../api/services/category';
 //     { id: 5, name: 'Science' }
 //   ]
 
+const initialErrors = {
+    title: '',
+    author: '',
+    totalQty: '',
+    category: ''
+}
+
 const BookPopup = ({title, isPopupOpen, closePopup, book, onEdit, onAdd, type='add'}) => {
 
     const [categories, setCategories] = useState([]);
@@ -20,19 +28,21 @@ const BookPopup = ({title, isPopupOpen, closePopup, book, onEdit, onAdd, type='a
         id: book?.id || '',
         title: book?.title || '',
         author: book?.author || '',
-        avlQty: book?.avlQty || '',
+        totalQty: book?.totalQty || '',
         image: book?.image || '',
-        category: book?.category?.name || '',
+        category: book?.category?.id || '',
     });
+
+    const [errors, setErrors] = useState(initialErrors);
 
     useEffect(() => {
         setBookData({
             id: book?.id || '',
             title: book?.title || '',
             author: book?.author || '',
-            avlQty: book?.avlQty || '',
+            totalQty: book?.totalQty || '',
             image: book?.image || '',
-            category: book?.category?.name || '',
+            category: book?.category?.id || '',
         })
     }, [book])
 
@@ -56,32 +66,90 @@ const BookPopup = ({title, isPopupOpen, closePopup, book, onEdit, onAdd, type='a
                 id: book?.id || '',
                 title: book?.title || '',
                 author: book?.author || '',
-                avlQty: book?.avlQty || '',
+                totalQty: book?.totalQty || '',
                 image: book?.image || '',
-                category: book?.category?.name || '',
+                category: book?.category?.id || '',
             })
+
+            setErrors(initialErrors);
         }
     }, [isPopupOpen])
 
     const handleChange = (e) => {
+        setErrors(initialErrors);
         setBookData({ ...bookData, [e.target.name]: e.target.value });
+    }
+
+    const validateBook = () => {
+        let isValid = true;
+        const newErrors = {
+            title: '',
+            author: '',
+            totalQty: '',
+            category: ''
+        }
+
+        if (!validateNotEmpty(bookData.title)) {
+            newErrors.title = `Title is required!`
+            isValid = false;
+        }
+
+        if (!validateNotEmpty(bookData.author)) {
+            newErrors.author = `Author name is required!`
+            isValid = false;
+        }
+
+        if (!validateNotEmpty(bookData.category)) {
+            newErrors.category = `Category is required!`
+            isValid = false;
+        }
+
+        if (!validateNotEmpty(bookData.totalQty)) {
+            newErrors.totalQty = `Quantity is required!`
+            isValid = false;
+        } else if (bookData.totalQty < 1) {
+            newErrors.totalQty = `Quantity can't be less than 1`
+            isValid = false;
+        }
+
+        if (!isValid) {
+            setErrors(newErrors);
+        }
+
+        return isValid;
+
+    }
+
+    const handleAdd = () => {
+        if (validateBook()) {
+            onAdd(bookData);
+            closePopup();
+        }
+    }
+
+    const handleEdit = () => {
+        if (validateBook()) {
+            onEdit(bookData); 
+            closePopup();
+        }
+        
     }
 
     return (
         <Popup isOpen={isPopupOpen} title={title} onClose={closePopup} >
-            <Input type={'text'} value={bookData.title} name={'title'} onChange={(e) => handleChange(e)} lable={'Title'} placeholder={'Enter book title'} />
-            <Input type={'text'} value={bookData.author} name={'author'} onChange={(e) => handleChange(e)} lable={'Author'} placeholder={'Enter author name'} />
-            <Input type={'number'} value={bookData.avlQty} name={'avlQty'} onChange={(e) => handleChange(e)} lable={'Quantity'} placeholder={'Enter book quantity'} />
-            <Select lable={'Category'} name={'category'} value={bookData.category} onChange={(e) => handleChange(e)} placeholder={'Select category'} >
+            <Input type={'text'} value={bookData.title} name={'title'} onChange={(e) => handleChange(e)} label={'Title'} placeholder={'Enter book title'} error={errors.title} />
+            <Input type={'text'} value={bookData.author} name={'author'} onChange={(e) => handleChange(e)} label={'Author'} placeholder={'Enter author name'} error={errors.author} />
+            <Input type={'number'} value={bookData.totalQty} name={'totalQty'} onChange={(e) => handleChange(e)} label={'Quantity'} placeholder={'Enter book quantity'} error={errors.totalQty} min={1} />
+            <Select label={'Category'} name={'category'} value={bookData.category} onChange={(e) => handleChange(e)} placeholder={'Select category'} error={errors.category} >
                 <option value="">Select category</option>
                 {categories.map(category => <option key={category.id} /*defaultChecked={book?.category?.id == category?.id}*/ value={category.id}>{category.name}</option>)}
             </Select>
-            {/* <Input type={'text'} value={bookData.image} name={'image'} onChange={(e) => handleChange(e)} lable={'Image'} placeholder={'Upload image'} /> */}
+            {/* <Input type={'text'} value={bookData.image} name={'image'} onChange={(e) => handleChange(e)} label={'Image'} placeholder={'Upload image'} /> */}
             <div className="book-update-btn">
                 {
                     type === 'edit' ?
-                    <Button onClick={() =>{onEdit(bookData); closePopup()}} varient={'primary'} >Update</Button> :
-                    <Button onClick={() => onAdd(bookData)} varient={'primary'} >Add</Button> 
+                    <Button onClick={() => handleEdit()} varient={'primary'} >Update</Button> :
+                    <Button onClick={() => handleAdd()} varient={'primary'} >Add</Button> 
                 }
             </div>
         </Popup>

@@ -58,7 +58,7 @@ const History = () => {
 
   return (
     <div className='history-Page'>
-      <h2>Your history</h2>
+      <h2 className='history-title'>Your history</h2>
       <Table colums={tableCols} data={userHistory} currentPage={page} totalPages={totalPages} onPageChange={setPage} sortBy={'Id'} onSort={handleSort} type={'userHistory'} />
     </div>
   )

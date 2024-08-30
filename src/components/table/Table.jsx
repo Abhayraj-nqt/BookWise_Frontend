@@ -127,19 +127,21 @@ const Table = ({ colums=[], data=[], currentPage=0, totalPages=1, onPageChange='
 
                                         // }
                                         return (
-                                            type === 'issuance'
+                                            (type === 'issuance' || type === 'userHistory')
                                                 ? <td key={key}>
                                                     {typeof value === 'object' 
                                                         ? value?.name || value?.title 
-                                                        : (key === 'issueTime' || key === 'returnTime') ? (
+                                                        : (key === 'issueTime' || key === 'expectedReturnTime' || key === 'actualReturnTime') ? (
                                                             <div className="">
                                                                 <div className="">{new Date(value).toLocaleDateString('en-GB')}</div>
                                                                 <div className="">{new Date(value).toLocaleTimeString()}</div>
                                                             </div>
-                                                        ) : value}
+                                                        ) : key === 'status' ? value.charAt(0).toUpperCase() + value.slice(1) :
+                                                        
+                                                        value}
                                                 </td>
-                                                : type === 'userHistory'
-                                                    ? <td key={key}>{typeof value === 'object' ? value?.name || value?.title : value}</td>
+                                                // : type === 'userHistory'
+                                                //     ? <td key={key}>{typeof value === 'object' ? value?.name || value?.title : value}</td>
                                                 : value && <td key={key}>
                                                     {typeof value === 'object' ? value?.name || value?.title : value}
                                                 </td>

@@ -1,5 +1,7 @@
 import app from '../apiClient';
 
+const API_ISSUANCE = `/api/issuance`;
+
 // GET issuance
 export const getAllIssuances = async (page, size, sortBy, sortDir, search, token) => {
     return await app.get(`/api/issuances`, {
@@ -17,7 +19,7 @@ export const getAllIssuances = async (page, size, sortBy, sortDir, search, token
 }
 
 export const getIssuanceById = async (id, token) => {
-    return await app.get(`/api/issuance/${id}`, {
+    return await app.get(`${API_ISSUANCE}/${id}`, {
         headers: {
             Authorization: token,
         }
@@ -27,7 +29,7 @@ export const getIssuanceById = async (id, token) => {
 
 // CREATE issuance
 export const createIssuance = async (issuance, token) => {
-    return await app.post(`/api/issuance`, issuance, {
+    return await app.post(API_ISSUANCE, issuance, {
         headers: {
             Authorization: token,
         }
@@ -45,7 +47,7 @@ export const updateIssuance = async (id, issuance, token) => {
 }
 
 export const updateStatus = async (id, newStatus, token) => {
-    return await app.put(`/api/issuance/status/${id}`, { newStatus }, {
+    return await app.put(`${API_ISSUANCE}/status/${id}`, { newStatus }, {
         headers: {
             Authorization: token,
         }
@@ -67,7 +69,7 @@ export const deleteIssuance = async (id, token) => {
 
 
 export const getIssuancesByMobile = async (mobile, token) => {
-    return await app.get(`/api/issuance/mobile/${mobile}`, {
+    return await app.get(`${API_ISSUANCE}/mobile/${mobile}`, {
         headers: {
             Authorization: token,
         }
@@ -75,7 +77,7 @@ export const getIssuancesByMobile = async (mobile, token) => {
 }
 
 export const getIssuancesByIssueDateRange = async (startDate, endDate, token) => {
-    return await app.get(`/api/issuance/issueDateRange/${startDate}/${endDate}`, {
+    return await app.get(`${API_ISSUANCE}/issueDateRange/${startDate}/${endDate}`, {
         headers: {
             Authorization: token,
         }

@@ -78,7 +78,7 @@ const AdminUserHistory = () => {
 
     return (
         <div>
-            <h2>{firstName}'s history</h2>
+            <h2 className='history-title'>{firstName}'s history</h2>
             <Table colums={tableCols} data={userHistory} currentPage={page} totalPages={totalPages} onPageChange={setPage} sortBy={'Id'} onSort={handleSort} type={'userHistory'} />
         </div>
     )

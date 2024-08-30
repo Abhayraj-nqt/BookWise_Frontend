@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux'
 import { deleteIssuance, getAllIssuances, updateIssuance } from '../../../api/services/Issuance'
 import toast from '../../../components/toast/toast'
 
-const issuanceCols = ['Id', 'User', 'Book', 'Issue', 'Return', 'Status', 'Type'];
+const issuanceCols = ['Id', 'User', 'Book', 'Issue', 'Return', 'Actual return', 'Status', 'Type'];
 
 const Issuance = () => {
 

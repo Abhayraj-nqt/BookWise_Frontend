@@ -62,11 +62,11 @@ const BookFilterPopup = ({ title, isPopupOpen, closePopup, onFilter }) => {
 
     return (
         <Popup isOpen={isPopupOpen} title={title} onClose={closePopup} >
-            <Select lable={'Category'} name={'category'} value={filter.category} onChange={(e) => handleChange(e)} placeholder={'Select category'} >
+            <Select label={'Category'} name={'category'} value={filter.category} onChange={(e) => handleChange(e)} placeholder={'Select category'} >
                 <option value="">Select category</option>
                 {categories.map(category => <option key={category.id} value={category.id}>{category.name}</option>)}
             </Select>
-            <Select lable={'Author'} name={'author'} value={filter.author} onChange={(e) => handleChange(e)} placeholder={'Select author'} >
+            <Select label={'Author'} name={'author'} value={filter.author} onChange={(e) => handleChange(e)} placeholder={'Select author'} >
                 <option value="">Select author</option>
                 {authors.map(author => <option key={author} value={author}>{author}</option>)}
             </Select>

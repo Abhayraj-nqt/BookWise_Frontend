@@ -1,8 +1,11 @@
 import app from '../apiClient';
 
+const API_BOOKS = `/api/books`
+const API_BOOK = `/api/book`
+
 // GET books
 export const getAllBooks = async (page, size, sortBy, sortDir, search, token) => {
-    return await app.get(`/api/books`, {
+    return await app.get(API_BOOKS, {
         params: {
             page: page,
             size: size,
@@ -17,7 +20,7 @@ export const getAllBooks = async (page, size, sortBy, sortDir, search, token) =>
 }
 
 export const getBookTitleCount = async (token) =>  {
-    return await app.get(`/api/books/title-count`, {
+    return await app.get(`${API_BOOKS}/title-count`, {
         headers: {
             Authorization: token,
         }
@@ -25,7 +28,7 @@ export const getBookTitleCount = async (token) =>  {
 }
 
 export const getTotalBookCount = async (token) =>  {
-    return await app.get(`/api/books/total-count`, {
+    return await app.get(`${API_BOOKS}/total-count`, {
         headers: {
             Authorization: token,
         }
@@ -35,7 +38,7 @@ export const getTotalBookCount = async (token) =>  {
 
 
 export const getBookById = async (id, token) => {
-    return await app.get(`/api/book/${id}`, {
+    return await app.get(`${API_BOOK}/${id}`, {
         headers: {
             Authorization: token
         }
@@ -43,7 +46,7 @@ export const getBookById = async (id, token) => {
 }
 
 export const getBookByTitle = async (title, token) => {
-    return await app.get(`/api/book/title/${title}`, {
+    return await app.get(`${API_BOOK}/title/${title}`, {
         headers: {
             Authorization: token
         }
@@ -51,17 +54,17 @@ export const getBookByTitle = async (title, token) => {
 }
 
 export const getBooksByCategoryId = async (categoryId) => {
-    return await app.get(`/api/books/categoryId/${categoryId}`);
+    return await app.get(`${API_BOOKS}/categoryId/${categoryId}`);
 }
 
 export const getBooksByAuthor = async (author) => {
-    return await app.get(`/api/books/author/${author}`);
+    return await app.get(`${API_BOOKS}/author/${author}`);
 }
 
 
 // CREATE book
 export const createBook = async (book, token) => {
-    return await app.post(`/api/book`, book, {
+    return await app.post(API_BOOK, book, {
         headers: {
             Authorization: token,
         }
