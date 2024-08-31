@@ -28,15 +28,15 @@ import BookFilterPopup from '../../../components/popup/BookFilterPopup'
 //   { id: 5, name: 'Science' }
 // ]
 
-const bookCols = ['Id', 'Title', 'Author', 'Avl. Qty', 'Category'];
+const bookCols = ['Id', 'Title', 'Author', 'Total Qty', 'Avl. Qty', 'Category'];
 
-const initalBooks = [
-  { id: 1, title: 'Game Of Thrones', author: 'R.R. Martin', avlQty: 10, image: null, category: { id: 1, name: 'History' } },
-  { id: 2, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', avlQty: 10, image: null, category: { id: 2, name: 'Politics' } },
-  { id: 3, title: 'Harry Potter', author: 'J.K. Rollins', avlQty: 10, image: null, category: { id: 3, name: 'Geography' } },
-  { id: 4, title: 'Doglapan', author: 'Ashneer Grover', avlQty: 10, image: null, category: { id: 4, name: 'Math' } },
-  { id: 5, title: 'Song Of Ice & Fire', author: 'R.R. Martin', avlQty: 10, image: null, category: { id: 5, name: 'Science' } },
-]
+// const initalBooks = [
+//   { id: 1, title: 'Game Of Thrones', author: 'R.R. Martin', avlQty: 10, image: null, category: { id: 1, name: 'History' } },
+//   { id: 2, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', avlQty: 10, image: null, category: { id: 2, name: 'Politics' } },
+//   { id: 3, title: 'Harry Potter', author: 'J.K. Rollins', avlQty: 10, image: null, category: { id: 3, name: 'Geography' } },
+//   { id: 4, title: 'Doglapan', author: 'Ashneer Grover', avlQty: 10, image: null, category: { id: 4, name: 'Math' } },
+//   { id: 5, title: 'Song Of Ice & Fire', author: 'R.R. Martin', avlQty: 10, image: null, category: { id: 5, name: 'Science' } },
+// ]
 
 const Book = () => {
 
@@ -48,7 +48,7 @@ const Book = () => {
     id: '',
     title: '',
     author: '',
-    avlQty: '',
+    totalQty: '',
     image: '',
     category: '',
   })
@@ -188,7 +188,7 @@ const Book = () => {
         id: '',
         title: '',
         author: '',
-        avlQty: '',
+        totalQty: '',
         image: '',
         category: '',
       })
@@ -208,7 +208,8 @@ const Book = () => {
       'Id': 'id',
       'Title': 'title',
       'Author': 'author',
-      'Avl. Qty': 'avlQty',
+      'Total qty': 'totalQty',
+      'Avl. qty': 'avlQty',
       'Category': 'category',
     }
 

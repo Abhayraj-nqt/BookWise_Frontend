@@ -67,13 +67,13 @@ const BookCard = ({ book, iconSize = 20, onDelete, onEdit }) => {
             </Card>
 
             <Popup isOpen={isPopupOpen} title={'Edit book'} onClose={closePopup} >
-                <Input type={'text'} value={bookData.title} name={'title'} onChange={(e) => handleChange(e)} lable={'Title'} placeholder={'Enter book title'} />
-                <Input type={'text'} value={bookData.author} name={'author'} onChange={(e) => handleChange(e)} lable={'Author'} placeholder={'Enter author name'} />
-                <Input type={'number'} value={bookData.avlQty} name={'avlQty'} onChange={(e) => handleChange(e)} lable={'Quantity'} placeholder={'Enter book quantity'} />
-                <Select lable={'Category'} name={'category'} value={bookData.category} onChange={(e) => handleChange(e)} placeholder={'Select category'} >
+                <Input type={'text'} value={bookData.title} name={'title'} onChange={(e) => handleChange(e)} label={'Title'} placeholder={'Enter book title'} />
+                <Input type={'text'} value={bookData.author} name={'author'} onChange={(e) => handleChange(e)} label={'Author'} placeholder={'Enter author name'} />
+                <Input type={'number'} value={bookData.avlQty} name={'avlQty'} onChange={(e) => handleChange(e)} label={'Quantity'} placeholder={'Enter book quantity'} />
+                <Select label={'Category'} name={'category'} value={bookData.category} onChange={(e) => handleChange(e)} placeholder={'Select category'} >
                     {categories.map(category => <option key={category.id} value={category.id}>{category.name}</option>)}
                 </Select>
-                {/* <Input type={'text'} value={bookData.image} name={'image'} onChange={(e) => handleChange(e)} lable={'Image'} placeholder={'Upload image'} /> */}
+                {/* <Input type={'text'} value={bookData.image} name={'image'} onChange={(e) => handleChange(e)} label={'Image'} placeholder={'Upload image'} /> */}
                 <div className="book-update-btn">
                     <Button onClick={() => onEdit(book.id, bookData)} varient={'primary'} >Update</Button>
                 </div>

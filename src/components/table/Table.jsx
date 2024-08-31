@@ -19,8 +19,11 @@ import Sheet from '../sheet/Sheet'
 import BookSheet from '../sheet/BookSheet'
 import UserSheet from '../sheet/UserSheet'
 import IssuancePopup from '../popup/IssuancePopup'
+import { Link, useNavigate } from 'react-router-dom'
 
 const Table = ({ colums=[], data=[], currentPage=0, totalPages=1, onPageChange='', sortBy='id', sortDir='asc', onSort='', addEdit=false, addDelete=false, onEdit, onDelete, iconSize = 25, type}) => {
+
+    const navigate = useNavigate();
 
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -124,17 +127,21 @@ const Table = ({ colums=[], data=[], currentPage=0, totalPages=1, onPageChange='
 
                                         // }
                                         return (
-                                            type === 'issuance'
+                                            (type === 'issuance' || type === 'userHistory')
                                                 ? <td key={key}>
                                                     {typeof value === 'object' 
                                                         ? value?.name || value?.title 
-                                                        : (key === 'issueTime' || key === 'returnTime') ? (
+                                                        : (key === 'issueTime' || key === 'expectedReturnTime' || key === 'actualReturnTime') ? (
                                                             <div className="">
                                                                 <div className="">{new Date(value).toLocaleDateString('en-GB')}</div>
                                                                 <div className="">{new Date(value).toLocaleTimeString()}</div>
                                                             </div>
-                                                        ) : value}
+                                                        ) : key === 'status' ? value.charAt(0).toUpperCase() + value.slice(1) :
+                                                        
+                                                        value}
                                                 </td>
+                                                // : type === 'userHistory'
+                                                //     ? <td key={key}>{typeof value === 'object' ? value?.name || value?.title : value}</td>
                                                 : value && <td key={key}>
                                                     {typeof value === 'object' ? value?.name || value?.title : value}
                                                 </td>
@@ -142,6 +149,7 @@ const Table = ({ colums=[], data=[], currentPage=0, totalPages=1, onPageChange='
                                     }
 
                                 })}
+                                {/* (type === 'book' && key === 'title') ?  <Link to={`/admin/book-history/${row?.id}`}>{value}</Link> : (type === 'user' && key === 'name') ?  <Link to={`/admin/user-history/${row?.mobileNumber}`}>{value}</Link> :  */}
 
                                 {(addEdit || addDelete) && <td className='table-action-btns'>
                                     {addEdit && <span onClick={() => handleEdit(row)} className='table-edit-icon icon'><EditIcon size={iconSize} /></span>}
@@ -157,7 +165,8 @@ const Table = ({ colums=[], data=[], currentPage=0, totalPages=1, onPageChange='
                                         </span>
                                         <span className="view-btn">
                                             {/* <FiEye size={25} /> */}
-                                            <Button type={'button'} varient={'secondary'}>View</Button>
+                                            {type === 'book' && <Button onClick={() => navigate(`/admin/book-history/${row?.id}`)} type={'button'} varient={'secondary'}>View</Button>}
+                                            {type === 'user' && <Button onClick={() => navigate(`/admin/user-history/${row?.mobileNumber}`)} type={'button'} varient={'secondary'}>View</Button>}
                                         </span>
                                     </td>
                                 }

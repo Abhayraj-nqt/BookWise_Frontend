@@ -9,3 +9,9 @@ select {
   background-color: var(--secondary-color-light)
 }
 
+
+.error-message {
+  color: var(--primary-color);
+  font-size: 0.75rem;
+
+}

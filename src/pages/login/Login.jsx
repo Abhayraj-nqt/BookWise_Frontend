@@ -19,6 +19,11 @@ import { validateEmailOrMobile, validatePassword } from '../../libs/utils'
 import { images } from '../../libs/constants'
 
 
+const initialErrors = {
+  username: '',
+  password: ''
+}
+
 const Login = () => {
 
   const dispatch = useDispatch();
@@ -29,10 +34,7 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('')
 
-  const [errors, setErrors] = useState({
-    username: '',
-    password: ''
-  });
+  const [errors, setErrors] = useState(initialErrors);
 
   useEffect (() => {
     if (auth && auth.token) {
@@ -44,27 +46,34 @@ const Login = () => {
     }
   }, [auth]);
 
+  const validateLogin = () => {
+    let isValid = true;
+    const newErrors = { username: '', password: '' };
+
+    if (!validateEmailOrMobile(username)) {
+      newErrors.username = 'Enter a valid email or 10-digit mobile number.';
+      isValid = false;
+    }
+
+    if (!validatePassword(password)) {
+      newErrors.password = 'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.';
+      isValid = false;
+    }
+
+    if (!isValid) {
+      setErrors(newErrors);
+    }
+
+    return isValid;
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation
-    // let isValid = true;
-    // const newErrors = { username: '', password: '' };
-
-    // if (!validateEmailOrMobile(username)) {
-    //   newErrors.username = 'Enter a valid email or 10-digit mobile number.';
-    //   isValid = false;
-    // }
-
-    // if (!validatePassword(password)) {
-    //   newErrors.password = 'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.';
-    //   isValid = false;
-    // }
-
-    // if (!isValid) {
-    //   setErrors(newErrors);
-    //   return;
-    // }
+    if (!validateLogin()) {
+      return;
+    }
+    
     
     try {
       const { data } = await login(username, password);
@@ -90,8 +99,8 @@ const Login = () => {
           : <h2 className='' style={{color: 'red'}}>Loading ...</h2>
         }
         <br />
-        <Input onChange={(e) => setUsername(e.target.value)} type='text' name='username' value={username} lable={'Username:'} placeholder={'Enter your username'} error={errors.username} />
-        <Input onChange={(e) => setPassword(e.target.value)} type='text' name='password' value={password} lable={'Password:'} placeholder={'Enter your password'} error={errors.password}  />
+        <Input onChange={(e) => {setUsername(e.target.value); setErrors(initialErrors)}} type='text' name='username' value={username} label={'Username:'} placeholder={'Enter your username'} error={errors.username} />
+        <Input onChange={(e) => {setPassword(e.target.value); setErrors(initialErrors)}} type='text' name='password' value={password} label={'Password:'} placeholder={'Enter your password'} error={errors.password}  />
         <div className="login-btn">
           <Button type={'submit'} varient={'primary'}  >Login</Button>
         </div>

@@ -5,6 +5,8 @@ import app from '../apiClient';
 //     return await app.get(`/api/categories`);
 // }
 
+const API_CATEGORY = `/api/category`
+
 export const getAllCategories = async (page, size, sortBy, sortDir, search) => {
     return await app.get(`/api/categories`, {
         params: {
@@ -18,7 +20,7 @@ export const getAllCategories = async (page, size, sortBy, sortDir, search) => {
 }
 
 export const getCategoryById = async (id) => {
-    return await app.get(`/api/category/${id}`);
+    return await app.get(`${API_CATEGORY}/${id}`);
 }
 
 export const getCategoryCount = async () => {
@@ -28,7 +30,7 @@ export const getCategoryCount = async () => {
 
 // CREATE category
 export const createCategory = async (category, token) => {
-    return await app.post(`/api/category`, category, {
+    return await app.post(API_CATEGORY, category, {
         headers: {
             Authorization: token,
         }
@@ -38,7 +40,7 @@ export const createCategory = async (category, token) => {
 
 // UPDATE category
 export const updateCategory = async (id, category, token) => {
-    return await app.put(`/api/category/${id}`, category, {
+    return await app.put(`${API_CATEGORY}/${id}`, category, {
         headers: {
             Authorization: token,
         }
@@ -48,7 +50,7 @@ export const updateCategory = async (id, category, token) => {
 
 // DELETE category
 export const removeCategory = async (id, token) => {
-    return await app.delete(`/api/category/${id}`, {
+    return await app.delete(`${API_CATEGORY}/${id}`, {
         headers: {
             Authorization: token,
         }

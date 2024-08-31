@@ -30,7 +30,7 @@ const CategoryCard = ({ category, iconSize = 20, onDelete, onEdit }) => {
             </Card>
 
             <Popup isOpen={isPopupOpen} title={'Edit category'} onClose={closePopup} >
-                <Input type={'text'} value={name} onChange={(e) => setName(e.target.value)} lable={'Name'} placeholder={'Enter category name'} />
+                <Input type={'text'} value={name} onChange={(e) => setName(e.target.value)} label={'Name'} placeholder={'Enter category name'} />
                 <div className="cat-update-btn">
                     <Button onClick={() => onEdit(category.id, name)} varient={'primary'} >Update</Button>
                 </div>

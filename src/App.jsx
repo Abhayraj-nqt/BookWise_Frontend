@@ -18,6 +18,8 @@ import Category from './pages/admin/category/Category'
 import Book from './pages/admin/book/Book'
 import User from './pages/admin/user/User'
 import Issuance from './pages/admin/issuance/Issuance'
+import BookHistory from './pages/admin/bookHistory/BookHistory'
+import AdminUserHistory from './pages/admin/userHistory/AdminUserHistory'
 
 import History from './pages/user/history/History'
 
@@ -86,6 +88,8 @@ const App = () => {
         <Route path='/admin/book' element={<AdminRoute> <Book /> </AdminRoute>} />
         <Route path='/admin/user' element={<AdminRoute> <User /> </AdminRoute> } />
         <Route path='/admin/issuance' element={<AdminRoute> <Issuance /> </AdminRoute>} />
+        <Route path='/admin/book-history/:bookId' element={<AdminRoute> <BookHistory /> </AdminRoute>} />
+        <Route path='/admin/user-history/:mobile' element={<AdminRoute> <AdminUserHistory /> </AdminRoute>} />
 
         {/* Protected routes for user */}
         <Route path='/user/history' element={<UserRoute> <History /> </UserRoute>} />
