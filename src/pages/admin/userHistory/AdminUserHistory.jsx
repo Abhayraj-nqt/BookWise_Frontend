@@ -7,6 +7,8 @@ import { getUserByMobile, getUserHistory } from '../../../api/services/user'
 import { useSelector } from 'react-redux'
 import toast from '../../../components/toast/toast'
 import Table from '../../../components/table/Table'
+import IssuanceFilterPopup from '../../../components/popup/IssuanceFilterPopup'
+import { FilterIcon } from '../../../components/icons/Icons'
 
 const tableCols = [
     "Id",
@@ -26,23 +28,40 @@ const AdminUserHistory = () => {
     const [user, setUser] = useState();
     const [firstName, setFirstName] = useState('');
     const [userHistory, setUserHistory] = useState([]);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-    const [totalPages, setTotalPages] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(5);
     const [sortBy, setSortBy] = useState('id');
     const [sortDir, setSortDir] = useState('asc');
-    const [search, setSearch] = useState('')
+    // const [search, setSearch] = useState('')
+    const [filterParams, setFilterParams] = useState({
+        page: page,
+        size: size,
+        sortBy: sortBy,
+        sortDir: sortDir,
+    })
 
     useEffect(() => {
         loadUserHistory();
+    }, [filterParams])
+
+    useEffect(() => {
+        // loadUserHistory();
+        setFilterParams({...filterParams, page, size, sortBy, sortDir});
     }, [page, size, sortBy, sortDir]);
+
+    const openFilter = () => setIsFilterOpen(true);
+    const closeFilter = () => setIsFilterOpen(false);
 
     const loadUserHistory = async () => {
         try {
             await loadUser();
-            const {data} = await getUserHistory(mobile, page, size, sortBy, sortDir, search, auth.token)
+            // const {data} = await getUserHistory(mobile, {page, size, sortBy, sortDir}, auth.token)
+            const {data} = await getUserHistory(mobile, filterParams, auth.token)
             setUserHistory(data.content);
+            setTotalPages(data.totalPages);
         } catch (error) {
             console.log(error);
             toast.error("Failed to load user history");
@@ -64,7 +83,12 @@ const AdminUserHistory = () => {
     const handleSort = (col, isDesc) => {
         const colMapping = {
             'Id': 'id',
-            'Book': 'book'
+            'Book': 'book',
+            'Issue': 'issueTime',
+            'Expected return': 'expectedReturnTime',
+            'Actual return': 'actualReturnTime',
+            'Status': 'status',
+            'Type': 'issuanceType'
         }
 
         setSortBy(colMapping[col]);
@@ -76,10 +100,28 @@ const AdminUserHistory = () => {
 
     }
 
+    const handleFilter = (filterObj) => {
+        // console.log(filterObj);
+
+        filterObj.page = page;
+        filterObj.size = size;
+        filterObj.sortBy = sortBy;
+        filterObj.sortDir = sortDir;
+
+        setFilterParams(filterObj);
+        closeFilter();
+    }
+
     return (
         <div>
-            <h2 className='history-title'>{firstName}'s history</h2>
+            <h2 className='user-admin-history-title'>{firstName}'s history</h2>
+            <div onClick={openFilter} className="filter-icon">
+                <span>Filter</span>
+                <FilterIcon size={20} />
+            </div>
             <Table colums={tableCols} data={userHistory} currentPage={page} totalPages={totalPages} onPageChange={setPage} sortBy={'Id'} onSort={handleSort} type={'userHistory'} />
+
+            <IssuanceFilterPopup isOpen={isFilterOpen} onClose={closeFilter} title={'Filter user history'} onFilter={handleFilter} />
         </div>
     )
 }

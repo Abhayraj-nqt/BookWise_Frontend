@@ -1,25 +1,4 @@
-import { GoHome, GoAlert, GoChecklist } from "react-icons/go";
-import { BiUser, BiCategory } from "react-icons/bi";
-import { BsBook } from "react-icons/bs";
-import { AiOutlineCloseCircle, AiOutlineInfoCircle } from "react-icons/ai";
-import { MdDone } from "react-icons/md";
-
 import { HomeIcon, CategoryIcon, BookIcon, UserIcon, IssuanceIcon, SuccessIcon, AlertIcon, ErrorIcon, InfoIcon } from "../components/icons/Icons";
-
-import accountIcon from '../assets/images/account.svg'
-import alertIcon from '../assets/images/alert.svg'
-import bookIcon from '../assets/images/book.svg'
-import categoryIcon from '../assets/images/category.svg'
-import crossIcon from '../assets/images/cross.svg'
-import deleteIcon from '../assets/images/delete.svg'
-import doneIcon from '../assets/images/done.svg'
-import editIcon from '../assets/images/edit.svg'
-import homeIcon from '../assets/images/home.svg'
-import infoIcon from '../assets/images/info.svg'
-import issuanceIcon from '../assets/images/issuance.svg'
-import userIcon from '../assets/images/user.svg'
-
-
 import logo from '../assets/images/logo.svg'
 import favicon from '../assets/images/favicon.svg'
 
@@ -79,5 +58,14 @@ export const toastIcons = {
         color: 'yellow'
     }
 
+}
+
+export const validationPatterns = {
+    email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    mobile: /^[0-9]{10}$/,
+    AZ: /[A-Z]/,
+    az: /[a-z]/,
+    number: /[0-9]/,
+    anyChar: /[^A-Za-z0-9]/,
 }
 

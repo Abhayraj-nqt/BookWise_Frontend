@@ -1,41 +1,136 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import './IssuanceFilterPopup.css'
 import Popup from './Popup'
-import Button from '../button/Button'
+import { getAllBooks } from '../../api/services/book';
+import Input from '../form/input/Input';
+import Select from '../form/select/Select';
+import DatePicker from '../form/date/DatePicker';
+import Button from '../button/Button';
+import { useSelector } from 'react-redux';
 
-const IssuanceFilterPopup = ({ title, isPopupOpen, closePopup, onFilter }) => {
+const UserHistoryFilterPopup = ({ onFilter, isOpen, onClose, title }) => {
 
-    const [filter, setFilter] = useState({
+    const auth = useSelector(state => state.auth);
 
-    })
+    const [allBooks, setAllBooks] = useState([]);
+    const [selectedBooks, setSelectedBooks] = useState([]);
+    const [issueTimeFrom, setIssueTimeFrom] = useState();
+    const [issueTimeTo, setIssueTimeTo] = useState();
+    const [status, setStatus] = useState('');
+    const [type, setType] = useState('');
 
-    const handleChange = (e) => {
-        
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    // const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+    useEffect(() => {
+        loadAllBooks();
+    }, [])
+
+    const loadAllBooks = async () => {
+        try {
+            // const {data} = await getAllBooks(page, size, sortBy, sortDir, search, auth.token);
+            const { data } = await getAllBooks(undefined, undefined, undefined, undefined, undefined, auth.token);
+            console.log(data);
+
+            if (Array.isArray(data)) {
+                setAllBooks(data);
+            } else {
+                setAllBooks(data.content);
+                //   setTotalPages(data.totalPages);
+            }
+        } catch (error) {
+            console.log('Error fetching books', error);
+        }
     }
 
-    const clearFilters = () => {
+    const toggleDropdown = () => setIsDropdownOpen(prev => !prev);
 
+    const handleSelectBooks = (e) => {
+        const { value, checked } = e.target;
+        if (checked) {
+            setSelectedBooks([...selectedBooks, value]);
+        } else {
+            setSelectedBooks(selectedBooks.filter(item => item !== value));
+        }
+    }
+
+    const handleFilter = () => {
+        const filterObj = {
+
+        }
+
+        if (selectedBooks.length > 0) {
+            // TODO - Create proper , seperated values
+            const titles = selectedBooks.toString();
+
+            filterObj.titles = titles;
+        }
+
+        if (issueTimeFrom) {
+            filterObj.issueTimeFrom = issueTimeFrom + 'T00:00:00';
+        }
+        if (issueTimeTo) {
+            filterObj.issueTimeTo = issueTimeTo + 'T23:59:00';
+        }
+        if (status) {
+            filterObj.status = status;
+        }
+        if (type) {
+            filterObj.type = type;
+        }
+
+        onFilter(filterObj);
     }
 
     return (
-        <Popup isOpen={isPopupOpen} title={title} onClose={closePopup} >
-            {/* <Select label={'Category'} name={'category'} value={filter.category} onChange={(e) => handleChange(e)} placeholder={'Select category'} >
-                <option value="">Select category</option>
-                {categories.map(category => <option key={category.id} value={category.id}>{category.name}</option>)}
-            </Select>
-            <Select label={'Author'} name={'author'} value={filter.author} onChange={(e) => handleChange(e)} placeholder={'Select author'} >
-                <option value="">Select author</option>
-                {authors.map(author => <option key={author} value={author}>{author}</option>)}
-            </Select>
-            <div className="out-of-stock">
-                <input name={'outOfStock'} value={filter.outOfStock} onChange={(e) => handleChange(e)} type='checkbox' checked={filter.outOfStock} />
-                <div>Include out of stock</div>
-            </div> */}
-            <div className="filter-btns">
-                <Button onClick={() => onFilter(filter)} varient={'primary'}>Filter</Button>
-                <Button onClick={() => clearFilters()} varient={'secondary'}>Clear</Button>
+        <Popup isOpen={isOpen} title={title} onClose={onClose} >
+            <div className="filter-select-books">
+                <div className="" onClick={() => toggleDropdown()}>
+                    <Input
+                        type='text'
+                        placeholder={'Select books'}
+                        value={selectedBooks.toString()}
+                        label={'Select books'}
+                        onChange={() => {}}
+
+                    />
+                </div>
+                {isDropdownOpen && allBooks?.length > 0 &&
+                    <div className='book-list-dropdown' onMouseLeave={() =>  setIsDropdownOpen(false)} onMouseOver={() => setIsDropdownOpen(true)} >
+                        {allBooks.map(book => <div key={book?.id} className='book-list-dropdown-item'>
+                            <input type="checkbox" value={book?.title} onChange={handleSelectBooks} checked={selectedBooks.includes(book?.title)} />
+                            <div className="">{book?.title}</div>
+                        </div>)}
+                    </div>}
             </div>
+
+            <div className="filter-select-data">
+                <DatePicker label={'Issuance from'} onChange={(e) => setIssueTimeFrom(e.target.value)} value={issueTimeFrom} />
+                <DatePicker label={'Issuance to'} onChange={(e) => setIssueTimeTo(e.target.value)} value={issueTimeTo} />
+            </div>
+
+            <div className="filter-select-status">
+                <Select label={'Select status'} onChange={(e) => setStatus(e.target.value)} value={status} >
+                    <option value={''}>All</option>
+                    <option value={'ISSUED'}>Issued</option>
+                    <option value={'RETURNED'}>Returned</option>
+                </Select>
+            </div>
+
+            <div className="filter-select-type">
+                <Select label={'Select issuance type'} onChange={(e) => setType(e.target.value)} value={type} >
+                    <option value={''}>All</option>
+                    <option value={'IN_HOUSE'}>In house</option>
+                    <option value={'TAKE_AWAY'}>Take away</option>
+                </Select>
+            </div>
+
+            <div className="filter-btn">
+                <Button varient='primary' onClick={handleFilter}>Filter</Button>
+            </div>
+
         </Popup>
     )
 }
 
-export default IssuanceFilterPopup
+export default UserHistoryFilterPopup

@@ -58,13 +58,13 @@ const App = () => {
 
       console.log("APP ->", data);
       
-      if (data.role === 'ROLE_ADMIN') {
-        navigate('/admin/dashboard');
-      } else if(data.role === 'ROLE_USER') {
-        navigate('/user/history');
-      } else {
-        navigate('/login');
-      }
+      // if (data.role === 'ROLE_ADMIN') {
+      //   navigate('/admin/dashboard');
+      // } else if(data.role === 'ROLE_USER') {
+      //   navigate('/user/history');
+      // } else {
+      //   navigate('/login');
+      // }
 
     } catch (error) {
       console.log(error);

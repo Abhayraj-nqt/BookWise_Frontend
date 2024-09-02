@@ -29,6 +29,7 @@ const IssuancePopup = ({title, isPopupOpen, closePopup, issuance, onEdit, onAdd,
     const [currentTime] = useState(
         new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
     );
+    const [isReturnTimeChanged, setIsReturnTimeChanged] = useState(false);
 
     const [errors, setErrors] = useState(initalErrors);
 
@@ -56,6 +57,7 @@ const IssuancePopup = ({title, isPopupOpen, closePopup, issuance, onEdit, onAdd,
                 issuanceType: '',
             })
 
+            setIsReturnTimeChanged(false);
             setErrors(initalErrors);
         }
     }, [isPopupOpen])
@@ -63,6 +65,10 @@ const IssuancePopup = ({title, isPopupOpen, closePopup, issuance, onEdit, onAdd,
     const handleChange = (e) => {
         setErrors(initalErrors);
         setIssuanceData({ ...issuanceData, [e.target.name]: e.target.value });
+
+        if (e.target.name === 'returnTime') {
+            setIsReturnTimeChanged(true);
+        }
     }
 
     const validateIssuance = () => {
@@ -105,18 +111,21 @@ const IssuancePopup = ({title, isPopupOpen, closePopup, issuance, onEdit, onAdd,
     const handleEdit = () => {
         if (validateIssuance()) {
 
-            let formatedDateTime = '';
-            const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false });
+            if (isReturnTimeChanged) {
+                let formatedDateTime = '';
+                const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false });
 
-            const currentDate = new Date().toLocaleDateString('en-CA');
+                const currentDate = new Date().toLocaleDateString('en-CA');
 
-            if (issuanceData.issuanceType === 'IN_HOUSE') {
-                formatedDateTime = `${currentDate}T${issuanceData.returnTime}:00`
-            } else {
-                formatedDateTime = `${issuanceData.returnTime}T${currentTime}`;
+                if (issuanceData.issuanceType === 'IN_HOUSE') {
+                    // formatedDateTime = `${currentDate}T${issuanceData.returnTime}:00`
+                    formatedDateTime = `${currentDate}T${issuanceData.returnTime}:00`
+                } else {
+                    formatedDateTime = `${issuanceData.returnTime}T${currentTime}`;
+                }
+
+                issuanceData.returnTime = formatedDateTime;
             }
-
-            issuanceData.returnTime = formatedDateTime;
 
             onEdit(issuanceData);
             closePopup();

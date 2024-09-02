@@ -8,6 +8,7 @@ import Searchbar from '../../../components/searchbar/Searchbar'
 import Button from '../../../components/button/Button'
 import Table from '../../../components/table/Table'
 import UserPopup from '../../../components/popup/UserPopup'
+import AlertPopup from '../../../components/popup/AlertPopup'
 
 const userCols = [
   "Id",
@@ -29,6 +30,8 @@ const User = () => {
   const [users, setUsers] = useState([])
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState();
   const [userData, setUserData] = useState({
     id: '',
     name: '',
@@ -44,13 +47,16 @@ const User = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       loadUsers();
-    }, 3000)
+    }, 1000)
 
     return () => clearTimeout(timeout);
   }, [search])
 
   const openPopup = () => setIsPopupOpen(true);
   const closePopup = () => setIsPopupOpen(false);
+
+  const openAlert = () => setIsAlertOpen(true);
+  const closeAlert = () => setIsAlertOpen(false);
 
   const loadUsers = async () => {
     try {
@@ -69,6 +75,7 @@ const User = () => {
 
   const handleEdit = async (userObj) => {
     try {
+      userObj.password = btoa(userObj.password);
       const { data } = await updateUser(userObj.mobileNumber, userObj, auth.token);
       await loadUsers();
       closePopup();
@@ -81,16 +88,37 @@ const User = () => {
   }
 
   const handleDelete = async (mobileNumber) => {
-    if (window.confirm('Are you really want to delete?')) {
+    setDeleteId(mobileNumber);
+    openAlert()
+
+    // if (window.confirm('Are you really want to delete?')) {
+    //   try {
+    //     const {data} = await removeUser(mobileNumber, auth.token);
+    //     // dispatch(deleteCategory(data.id));
+    //     await loadUsers();
+    //     toast.success(`${data?.name} is deleted`);
+    //   } catch (error) {
+    //     console.log(error);
+    //     toast.error('Failed to delete.')
+    //   }
+    // }
+  }
+
+  const handleConfirmDelete = async (confirm) => {
+    if (confirm && deleteId) {
       try {
-        const {data} = await removeUser(mobileNumber, auth.token);
+        const {data} = await removeUser(deleteId, auth.token);
         // dispatch(deleteCategory(data.id));
         await loadUsers();
         toast.success(`${data?.name} is deleted`);
+        setDeleteId(undefined);
       } catch (error) {
         console.log(error);
         toast.error('Failed to delete.')
+        setDeleteId(undefined);
       }
+    } else {
+      setDeleteId(undefined);
     }
   }
 
@@ -151,6 +179,8 @@ const User = () => {
       </div>
 
       <UserPopup title={'Add user'} isPopupOpen={isPopupOpen} closePopup={closePopup} onAdd={handleAddNewUser} category={userData} type='add'  />
+
+      <AlertPopup isOpen={isAlertOpen} onClose={closeAlert} onConfirm={handleConfirmDelete} />
 
     </div>
   )

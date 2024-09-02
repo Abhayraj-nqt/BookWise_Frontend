@@ -63,3 +63,12 @@
   font-size: 1rem;
   color: var(--color-text-dark);
 }
+
+.alert-popup-msg {
+  margin-bottom: 1.5rem;
+}
+
+.alert-popup-btns {
+  display: flex;
+  gap: 0.5rem;
+}

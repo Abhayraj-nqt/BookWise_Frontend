@@ -19,7 +19,7 @@ const History = () => {
   const auth = useSelector(state => state.auth);
   const [userHistory, setUserHistory] = useState([]);
 
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(5);
   const [sortBy, setSortBy] = useState('id');
@@ -33,8 +33,9 @@ const History = () => {
   const loadUserHistory = async () => {
     try {
       // await loadUser();
-      const {data} = await getUserHistory(auth.mobileNumber, page, size, sortBy, sortDir, search, auth.token)
+      const {data} = await getUserHistory(auth.mobileNumber, {page, size, sortBy, sortDir, search}, auth.token)
       setUserHistory(data.content);
+      setTotalPages(data.totalPages);
     } catch (error) {
       console.log(error);
       console.log("Failed to load user history");

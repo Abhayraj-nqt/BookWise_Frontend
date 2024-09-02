@@ -18,6 +18,7 @@ import Input from '../../components/form/input/Input'
 
 import { AccountIcon, BookIcon, CategoryIcon, HomeIcon, IssuanceIcon, UserIcon, ArrowDownIcon, DeleteIcon, EditIcon, InfoIcon, AlertIcon, ErrorIcon, SuccessIcon } from '../../components/icons/Icons'
 import Sheet from '../../components/sheet/Sheet'
+import AlertPopup from '../../components/popup/AlertPopup'
 
 const Test = () => {
 
@@ -46,7 +47,7 @@ const Test = () => {
       <button onClick={openPopup}>
         Open Popup
       </button>
-      <button onClick={() => toast.success("Success")}>
+      {/* <button onClick={() => toast.success("Success")}>
         Toast success
       </button>
       <button onClick={() => toast.error("Error")}>
@@ -73,9 +74,11 @@ const Test = () => {
         <AlertIcon />
         <ErrorIcon />
         <SuccessIcon />
-      </div>
+      </div> */}
 
-      <Popup isOpen={isPopupOpen} title={'Popup Title'} onClose={closePopup} >
+      <AlertPopup isOpen={isPopupOpen} onClose={closePopup} onConfirm={() => console.log('Confirmed')} />
+
+      {/* <Popup isOpen={isPopupOpen} title={'Popup Title'} onClose={closePopup} >
         <p>This is an example of a reusable popup component.</p>
         <button onClick={closePopup} className='button-primary' >Close</button>
       </Popup>
@@ -86,7 +89,7 @@ const Test = () => {
           <h2>Sheet Content</h2>
           <p>This is the content inside the sheet.</p>
         </Sheet>
-      </div>
+      </div> */}
 
     </div>
   )

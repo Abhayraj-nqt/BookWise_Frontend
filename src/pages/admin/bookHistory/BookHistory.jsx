@@ -25,7 +25,7 @@ const BookHistory = () => {
     const [book, setBook] = useState();
     const [bookHistory, setBookHistory] = useState([]);
 
-    const [totalPages, setTotalPages] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(5);
     const [sortBy, setSortBy] = useState('id');
@@ -39,7 +39,7 @@ const BookHistory = () => {
     // useEffect(() => {
     //     const timeout = setTimeout(() => {
     //       loadBooks();
-    //     }, 3000)
+    //     }, 1000)
     
     //     return () => clearTimeout(timeout);
     //   }, [search])
@@ -49,6 +49,7 @@ const BookHistory = () => {
             await loadBook();
             const {data} = await getBookHistory(bookId, page, size, sortBy, sortDir, search, auth.token);
             setBookHistory(data.content);
+            setTotalPages(data.totalPages);
         } catch (error) {
             console.log(error);
             toast.error(`Failed to load book history`);
@@ -69,7 +70,12 @@ const BookHistory = () => {
     const handleSort = (col, isDesc) => {
         const colMapping = {
             'Id': 'id',
-            'Book': 'book'
+            'Book': 'book',
+            'Issue': 'issueTime',
+            'Expected return': 'expectedReturnTime',
+            'Actual return': 'actualReturnTime',
+            'Status': 'status',
+            'Type': 'type'
         }
 
         setSortBy(colMapping[col]);
