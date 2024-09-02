@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Popup from './Popup';
 import Input from '../form/input/Input';
 import Button from '../button/Button';
-import { validateEmail, validateMobile, validateNotEmpty } from '../../libs/utils';
+import { validateEmail, validateMobile, validateNotEmpty, validatePassword } from '../../libs/utils';
 
 const initialErrors = {
     name: '',
@@ -49,7 +49,9 @@ const UserPopup = ({ title, isPopupOpen, closePopup, user, onEdit, onAdd, type =
     }, [isPopupOpen])
 
     const handleChange = (e) => {
-        setErrors(initialErrors);
+
+        // setErrors(initialErrors);
+        setErrors({ ...errors, [e.target.name]: ''});
         setUserData({ ...userData, [e.target.name]: e.target.value });
     }
 
@@ -67,19 +69,27 @@ const UserPopup = ({ title, isPopupOpen, closePopup, user, onEdit, onAdd, type =
             isValid = false;
         }
 
-        if (!validateEmail(userData.email)) {
+        if (!validateNotEmpty(userData.email)) {
             newErrors.email = `Email is required!`
             isValid = false;
+        } else if (!validateEmail(userData.email)) {
+            newErrors.email = `Enter a valid email!`
+            isValid = false;
         }
 
-        if (!validateMobile(userData.mobileNumber)) {
+        if (!validateNotEmpty(userData.mobileNumber)) {
             newErrors.mobileNumber = `Mobile no. is required!`
             isValid = false;
+        } else if (!validateMobile(userData.mobileNumber)) {
+            newErrors.mobileNumber = `Enter a valid 10-digit mobile no.`
+            isValid = false;
         }
 
-        if (!validateNotEmpty(userData.password)) {
-            newErrors.password = `Password is required!`
-            isValid = false;
+        if (userData.password.length > 0) {
+            if (!validatePassword(userData.password)) {
+                newErrors.password = `Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.`
+                isValid = false;
+            }
         }
 
         if (!isValid) {
@@ -107,7 +117,7 @@ const UserPopup = ({ title, isPopupOpen, closePopup, user, onEdit, onAdd, type =
             <Input type={'text'} value={userData.name} name={'name'} onChange={(e) => handleChange(e)} label={'Name'} placeholder={'Enter name'} error={errors.name} />
             <Input type={'text'} value={userData.mobileNumber} name={'mobileNumber'} onChange={(e) => handleChange(e)} label={'Mobile'} placeholder={'Enter mobile no.'} error={errors.mobileNumber} />
             <Input type={'email'} value={userData.email} name={'email'} onChange={(e) => handleChange(e)} label={'Email'} placeholder={'Enter email'} error={errors.email} />
-            <Input type={'text'} value={userData.password} name={'password'} onChange={(e) => handleChange(e)} label={'Password'} placeholder={'Enter password'} error={errors.password} />
+            {type === 'edit' && <Input type={'text'} value={userData.password} name={'password'} onChange={(e) => handleChange(e)} label={'Password'} placeholder={'Enter password'} error={errors.password} />}
             <div className="user-update-btn">
                 {
                     type === 'edit' ?

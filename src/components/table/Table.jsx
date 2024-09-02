@@ -10,16 +10,12 @@ import BookPopup from '../popup/BookPopup'
 import Pagination from '../pagination/Pagination'
 
 import { TiArrowUnsorted } from "react-icons/ti";
-import { FaEye } from "react-icons/fa";
-import { FiEye } from "react-icons/fi";
-import { IssuanceIcon } from '../icons/Icons'
 import UserPopup from '../popup/UserPopup'
 import Button from '../button/Button'
-import Sheet from '../sheet/Sheet'
 import BookSheet from '../sheet/BookSheet'
 import UserSheet from '../sheet/UserSheet'
 import IssuancePopup from '../popup/IssuancePopup'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 const Table = ({ colums=[], data=[], currentPage=0, totalPages=1, onPageChange='', sortBy='id', sortDir='asc', onSort='', addEdit=false, addDelete=false, onEdit, onDelete, iconSize = 25, type}) => {
 
@@ -135,8 +131,11 @@ const Table = ({ colums=[], data=[], currentPage=0, totalPages=1, onPageChange='
                                                             <div className="">
                                                                 <div className="">{new Date(value).toLocaleDateString('en-GB')}</div>
                                                                 <div className="">{new Date(value).toLocaleTimeString()}</div>
+                                                                
                                                             </div>
-                                                        ) : key === 'status' ? value.charAt(0).toUpperCase() + value.slice(1) :
+                                                        ) : 
+                                                        
+                                                        // key === 'status' ? value.charAt(0).toUpperCase() + value.slice(1) :
                                                         
                                                         value}
                                                 </td>

@@ -72,17 +72,24 @@ export const removeUser = async (mobile, token) => {
 
 
 // USER History
+// export const getUserHistory = async (mobile, page, size, sortBy, sortDir, search, token) => {
+//     return await app.get(`${API_USER}/history/${mobile}`, {
+//         params: {
+//             page: page,
+//             size: size,
+//             sortBy: sortBy,
+//             sortDir: sortDir,
+//             search: search,
+//         },
+//         headers: {
+//             Authorization: token,
+//         }
+//     })
+// }
 
-// BOOK History
-export const getUserHistory = async (mobile, page, size, sortBy, sortDir, search, token) => {
+export const getUserHistory = async (mobile, params, token) => {
     return await app.get(`${API_USER}/history/${mobile}`, {
-        params: {
-            page: page,
-            size: size,
-            sortBy: sortBy,
-            sortDir: sortDir,
-            search: search,
-        },
+        params: params,
         headers: {
             Authorization: token,
         }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Sheet from './Sheet'
-import { getBookByTitle } from '../../api/services/book';
+import { getAllBooks, getBookByTitle } from '../../api/services/book';
 import { useSelector } from 'react-redux';
 import Searchbar from '../searchbar/Searchbar';
 import Button from '../button/Button';
@@ -11,6 +11,12 @@ import Select from '../form/select/Select';
 import { createIssuance } from '../../api/services/Issuance';
 import TimePicker from '../form/time/TimePicker';
 import DatePicker from '../form/date/DatePicker';
+import SelectSearch from '../form/selectSearch/SelectSearch';
+import { validateNotEmpty } from '../../libs/utils';
+
+const initialErrors = {
+    returnTime: ''
+}
 
 const UserSheet = ({ isSheetOpen, onClose, userData }) => {
 
@@ -34,7 +40,11 @@ const UserSheet = ({ isSheetOpen, onClose, userData }) => {
     const [query, setQuery] = useState('');
     const [clearInput, setClearInput] = useState(false);
     const [issuanceType, setIssuanceType] = useState('IN_HOUSE');
-    const [returnTime, setReturnTme] = useState();
+    const [returnTime, setReturnTime] = useState('');
+    const [errors, setErrors] = useState(initialErrors);
+    const [search, setSearch] = useState('');
+    const [clearSheetInput, setClearSheetInput] = useState(false);
+    const [bookList, setBookList] = useState([]);
 
     useEffect(() => {
         if (!isSheetOpen) {
@@ -50,26 +60,35 @@ const UserSheet = ({ isSheetOpen, onClose, userData }) => {
             })
             setQuery('');
             setClearInput(true);
+            setClearSheetInput(true);
+            setErrors(initialErrors);
         } else {
             setClearInput(false);
+            setClearSheetInput(false);
         }
     }, [isSheetOpen])
 
-    const handleSearch = (searchQuery) => {
-        setQuery(searchQuery);
+    const handleSearch = async (searchQuery) => {
+        // setQuery(searchQuery);
+        setSearch(searchQuery);
+        await loadBooks();
     }
 
-    const handleClickSearch = async () => {
-        try {
-            const { data } = await getBookByTitle(query, auth.token);
-            setBookData(data);
-        } catch (error) {
-            console.log(error);
-            toast.error(`Failed to find book`);
-        }
-    }
+    // const handleClickSearch = async () => {
+    //     try {
+    //         const { data } = await getBookByTitle(query, auth.token);
+    //         setBookData(data);
+    //     } catch (error) {
+    //         console.log(error);
+    //         toast.error(`Failed to find book`);
+    //     }
+    // }
 
     const handleBookIssue = async () => {
+
+        if (!validate()) {
+            return;
+        }
 
         let formatedDateTime = '';
         const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false });
@@ -102,21 +121,57 @@ const UserSheet = ({ isSheetOpen, onClose, userData }) => {
         onClose();
     }
 
+    const validate = () => {
+        let isValid = true;
+        const newErrors = {
+            returnTime: ''
+        }
+
+        if (!validateNotEmpty(returnTime)) {
+            newErrors.returnTime = `Return time is required!`
+            isValid = false;
+        }
+
+        if (!isValid) {
+            setErrors(newErrors);
+        }
+
+        return isValid;
+    }
+
+    const loadBooks = async () => {
+        try {
+            const { data } = await getAllBooks(0, 10, 'title', 'asc', search, auth.token)
+            if (Array.isArray(data)) {
+                setBookList(data)
+            } else {
+                setBookList(data?.content);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleSelect = (selectedBook) => {
+        setBookData(selectedBook);
+    }
+
     return (
         <Sheet isOpen={isSheetOpen} onClose={onClose}>
             <div className="user-sheet">
                 <h2>Issue book to user</h2>
                 <div className="sheet-serch-bar">
-                    <Searchbar placeholder={'Search book by title'} onSearch={handleSearch} varient={'secondary'} clearInput={clearInput} icon={false} />
-                    <Button onClick={handleClickSearch} varient={'primary'}>Search</Button>
+                    {/* <Searchbar placeholder={'Search book by title'} onSearch={handleSearch} varient={'secondary'} clearInput={clearInput} icon={false} /> */}
+                    <SelectSearch  options={bookList} setOptions={setBookList} onSearch={handleSearch} placeholder='Enter book title' onSelect={handleSelect} clearInput={clearSheetInput} type={'book'} />
+                    {/* <Button onClick={handleClickSearch} varient={'primary'}>Search</Button> */}
                 </div>
                 <div className="">
                     <Select label={'Type'} name={'issuanceType'} value={issuanceType} onChange={(e) => setIssuanceType(e.target.value)} placeholder={'Select issuance typr'} >
                         <option value="IN_HOUSE">In house</option>
                         <option value="TAKE_AWAY">Take away</option>
                     </Select>
-                    {issuanceType === 'IN_HOUSE' && <TimePicker label={'Return time'} name='returnTime' value={returnTime} onChange={(e) => setReturnTme(e.target.value)} placeholder={'Select time'} className={''} min={currentTime} />}
-                    {issuanceType === 'TAKE_AWAY' && <DatePicker label={'Return date'} name='returnTime' value={returnTime} onChange={(e) => setReturnTme(e.target.value)} placeholder={'Select date'} className={''} min={new Date().toISOString().split("T")[0]} />}
+                    {issuanceType === 'IN_HOUSE' && <TimePicker label={'Return time'} name='returnTime' value={returnTime} onChange={(e) => {setReturnTime(e.target.value); setErrors(initialErrors)}} placeholder={'Select time'} className={''} min={currentTime} error={errors.returnTime} />}
+                    {issuanceType === 'TAKE_AWAY' && <DatePicker label={'Return date'} name='returnTime' value={returnTime} onChange={(e) => {setReturnTime(e.target.value); setErrors(initialErrors)}} placeholder={'Select date'} className={''} min={new Date().toISOString().split("T")[0]} error={errors.returnTime} />}
                 </div>
 
                 {userData && userData.mobileNumber &&

@@ -76,7 +76,8 @@ const BookPopup = ({title, isPopupOpen, closePopup, book, onEdit, onAdd, type='a
     }, [isPopupOpen])
 
     const handleChange = (e) => {
-        setErrors(initialErrors);
+        // setErrors(initialErrors);
+        setErrors({ ...errors, [e.target.name]: ''});
         setBookData({ ...bookData, [e.target.name]: e.target.value });
     }
 

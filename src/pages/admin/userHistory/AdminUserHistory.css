@@ -1,5 +1,8 @@
-.history-title {
-    margin: 1rem 0rem;
-    margin-bottom: 2rem;
+.user-admin-history-title {
+    margin: 0.5rem 0rem;
+    /* margin-bottom: 2rem; */
 }
 
+.filter-icon {
+    margin-bottom: 1rem;
+}

@@ -13,7 +13,7 @@ import Button from '../../components/button/Button'
 import { login } from '../../api/services/auth'
 import { loginUser } from '../../redux/auth/authActions'
 import toast from '../../components/toast/toast'
-import { validateEmailOrMobile, validatePassword } from '../../libs/utils'
+import { validateEmailOrMobile, validateNotEmpty, validatePassword } from '../../libs/utils'
 
 // Constants
 import { images } from '../../libs/constants'
@@ -33,7 +33,7 @@ const Login = () => {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('')
-
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [errors, setErrors] = useState(initialErrors);
 
   useEffect (() => {
@@ -45,6 +45,7 @@ const Login = () => {
       }
     }
   }, [auth]);
+  
 
   const validateLogin = () => {
     let isValid = true;
@@ -55,10 +56,15 @@ const Login = () => {
       isValid = false;
     }
 
-    if (!validatePassword(password)) {
-      newErrors.password = 'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.';
+    if (!validateNotEmpty(password)) {
+      newErrors.password = 'Password is required!';
       isValid = false;
     }
+
+    // if (!validatePassword(password)) {
+    //   newErrors.password = 'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.';
+    //   isValid = false;
+    // }
 
     if (!isValid) {
       setErrors(newErrors);
@@ -76,7 +82,8 @@ const Login = () => {
     
     
     try {
-      const { data } = await login(username, password);
+      const encodedPassword = btoa(password);
+      const { data } = await login(username, encodedPassword);
       dispatch(loginUser(data));
       window.localStorage.setItem('authtoken', data.token);
       toast.success('Login successfull');
@@ -87,6 +94,10 @@ const Login = () => {
     }
 
   }
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(prev => !prev);
+  };
 
 
   return (
@@ -100,7 +111,7 @@ const Login = () => {
         }
         <br />
         <Input onChange={(e) => {setUsername(e.target.value); setErrors(initialErrors)}} type='text' name='username' value={username} label={'Username:'} placeholder={'Enter your username'} error={errors.username} />
-        <Input onChange={(e) => {setPassword(e.target.value); setErrors(initialErrors)}} type='text' name='password' value={password} label={'Password:'} placeholder={'Enter your password'} error={errors.password}  />
+        <Input onChange={(e) => {setPassword(e.target.value); setErrors(initialErrors)}} type={passwordVisible ? 'text' : 'password'} name='password' value={password} label={'Password:'} placeholder={'Enter your password'} error={errors.password}  />
         <div className="login-btn">
           <Button type={'submit'} varient={'primary'}  >Login</Button>
         </div>

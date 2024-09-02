@@ -10,6 +10,7 @@ import Searchbar from '../../../components/searchbar/Searchbar'
 import Button from '../../../components/button/Button'
 import Table from '../../../components/table/Table'
 import CategoryPopup from '../../../components/popup/CategoryPopup'
+import AlertPopup from '../../../components/popup/AlertPopup'
 
 // Functions
 import { removeCategory, createCategory, updateCategory, getAllCategories } from '../../../api/services/category'
@@ -42,6 +43,8 @@ const Category = () => {
 
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState();
   const [categoryData, setCategoryData] = useState({
     id: '',
     name: '',
@@ -67,14 +70,14 @@ const Category = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       loadCategories();
-    }, 3000)
+    }, 1000)
 
     return () => clearTimeout(timeout);
   }, [search])
 
   const loadCategories = async () => {
     try {
-      const {data} = await getAllCategories(page, size, sortBy, sortDir, search);
+      const { data } = await getAllCategories(page, size, sortBy, sortDir, search);
 
       // If no pagination is applied, response.data will be an array, otherwise a Page object
       if (Array.isArray(data)) {
@@ -103,10 +106,13 @@ const Category = () => {
   const openPopup = () => setIsPopupOpen(true);
   const closePopup = () => setIsPopupOpen(false);
 
+  const openAlert = () => setIsAlertOpen(true);
+  const closeAlert = () => setIsAlertOpen(false);
+
   const handleEdit = async (categoryObj) => {
-    
+
     try {
-      const { data } = await updateCategory(categoryObj.id, {"name": categoryObj?.name}, auth.token);
+      const { data } = await updateCategory(categoryObj.id, { "name": categoryObj?.name }, auth.token);
       // dispatch(updateCategoryAction(data));
       await loadCategories();
       closePopup();
@@ -120,17 +126,37 @@ const Category = () => {
     console.log('UPDATE', categoryObj);
   }
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you really want to delete?')) {
+  const handleDelete = (id) => {
+    setDeleteId(id);
+    openAlert();
+
+    // if (window.confirm('Are you really want to delete?')) {
+    //   try {
+    //     const {data} = await removeCategory(id, auth?.token);
+    //     // dispatch(deleteCategory(data.id));
+    //     await loadCategories();
+    //     toast.success(`${data?.name} is deleted`);
+    //   } catch (error) {
+    //     console.log(error);
+    //     toast.error('Failed to delete.')
+    //   }
+    // }
+  }
+
+  const handleConfirmDelete = async (confirm) => {
+    if (confirm && deleteId) {
       try {
-        const {data} = await removeCategory(id, auth?.token);
-        // dispatch(deleteCategory(data.id));
+        const { data } = await removeCategory(deleteId, auth?.token);
         await loadCategories();
         toast.success(`${data?.name} is deleted`);
+        setDeleteId(undefined);
       } catch (error) {
         console.log(error);
-        toast.error('Failed to delete.')
+        toast.error('Failed to delete.');
+        setDeleteId(undefined);
       }
+    } else {
+      setDeleteId(undefined);
     }
   }
 
@@ -138,7 +164,7 @@ const Category = () => {
 
     // validate
     let isValid = true;
-    const newError = {name: ''};
+    const newError = { name: '' };
 
     if (!validateNotEmpty(categoryObj?.name)) {
       newError.name = `Category name can't be empty`
@@ -152,7 +178,7 @@ const Category = () => {
 
 
     try {
-      const { data } = await createCategory({ "name" :categoryObj?.name}, auth?.token);
+      const { data } = await createCategory({ "name": categoryObj?.name }, auth?.token);
       // dispatch(addCategory(data));
       setCategoryData({
         id: '',
@@ -175,7 +201,7 @@ const Category = () => {
       'Name': 'name',
     }
 
-    console.log({"col": colMapping[col], isDesc});
+    console.log({ "col": colMapping[col], isDesc });
 
     setSortBy(colMapping[col]);
     if (isDesc) {
@@ -188,7 +214,7 @@ const Category = () => {
   const handleSearch = async (searchQuery) => {
     setSearch(searchQuery);
   };
-  
+
   return (
     <div className='category-page'>
       <div className="category-header">
@@ -198,10 +224,12 @@ const Category = () => {
       <br />
 
       <div className="">
-        <Table colums={categoryCols} data={categories} currentPage={page} totalPages={totalPages} onPageChange={setPage} sortBy={'Id'} onSort={handleSort} addEdit={true} addDelete={true} onEdit={handleEdit} onDelete={handleDelete} type={'category'}  />
+        <Table colums={categoryCols} data={categories} currentPage={page} totalPages={totalPages} onPageChange={setPage} sortBy={'Id'} onSort={handleSort} addEdit={true} addDelete={true} onEdit={handleEdit} onDelete={handleDelete} type={'category'} />
       </div>
 
-      <CategoryPopup title={'Add category'} isPopupOpen={isPopupOpen} closePopup={closePopup} onAdd={handleAddNewCategory} category={categoryData} type='add' errors={errors}  />
+      <CategoryPopup title={'Add category'} isPopupOpen={isPopupOpen} closePopup={closePopup} onAdd={handleAddNewCategory} category={categoryData} type='add' errors={errors} />
+
+      <AlertPopup isOpen={isAlertOpen} onClose={closeAlert} onConfirm={handleConfirmDelete} />
 
     </div>
   )

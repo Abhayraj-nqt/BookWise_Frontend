@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Sheet from './Sheet'
 import Searchbar from '../searchbar/Searchbar'
 import Card from '../card/Card'
-import { getUserByMobile } from '../../api/services/user'
+import { getAllUsers, getUserByMobile } from '../../api/services/user'
 import toast from '../toast/toast'
 import { useSelector } from 'react-redux'
 import Button from '../button/Button'
@@ -14,6 +14,7 @@ import { createIssuance } from '../../api/services/Issuance'
 import TimePicker from '../form/time/TimePicker'
 import DatePicker  from '../form/date/DatePicker'
 import { validateNotEmpty } from '../../libs/utils'
+import SelectSearch from '../form/selectSearch/SelectSearch'
 
 const initialErrors = {
     returnTime: ''
@@ -37,8 +38,11 @@ const BookSheet = ({ isSheetOpen, onClose, bookData }) => {
     const [query, setQuery] = useState('');
     const [clearInput, setClearInput] = useState(false);
     const [issuanceType, setIssuanceType] = useState('IN_HOUSE');
-    const [returnTime, setReturnTme] = useState();
+    const [returnTime, setReturnTme] = useState('');
     const [errors, setErrors] = useState(initialErrors);
+    const [search, setSearch] = useState('');
+    const [userList, setUserList] = useState([]);
+    const [clearSheetInput, setClearSheetInput] = useState(false);
 
     useEffect(() => {
         if(!isSheetOpen) {
@@ -50,14 +54,22 @@ const BookSheet = ({ isSheetOpen, onClose, bookData }) => {
             })
             setQuery('');
             setClearInput(true);
+            setClearSheetInput(true);
             setErrors(initialErrors);
         } else {
             setClearInput(false);
+            setClearSheetInput(false);
         }
     }, [isSheetOpen])
 
-    const handleSearch = (searchQuery) => {
-        setQuery(searchQuery);
+    const handleSearch = async (searchQuery) => {
+        // setQuery(searchQuery);
+        setSearch(searchQuery);
+        await loadUsers()
+    }
+
+    const handleSelect = (selectedUser) => {
+        setUserData(selectedUser);
     }
 
     const handleClickSearch = async () => {
@@ -108,7 +120,7 @@ const BookSheet = ({ isSheetOpen, onClose, bookData }) => {
     }
 
     const validate = () => {
-        let isValid = false;
+        let isValid = true;
         const newErrors = {
             returnTime: ''
         }
@@ -125,16 +137,30 @@ const BookSheet = ({ isSheetOpen, onClose, bookData }) => {
         return isValid;
     }
 
+    const loadUsers = async () => {
+        try {
+            const { data } = await getAllUsers(0, 10, 'mobileNumber', 'asc', search, auth.token)
+            if (Array.isArray(data)) {
+                setUserList(data)
+            } else {
+                setUserList(data?.content);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <Sheet isOpen={isSheetOpen} onClose={onClose}>
             <div className="book-sheet">
                 <h2>Issue book to user</h2>
                 <div className="sheet-serch-bar">
-                    <Searchbar placeholder={'Search user by mobile no.'} onSearch={handleSearch} varient={'secondary'} clearInput={clearInput} icon={false} />
-                    <Button onClick={handleClickSearch} varient={'primary'}>Search</Button>
+                    {/* <Searchbar placeholder={'Search user by mobile no.'} onSearch={handleSearch} varient={'secondary'} clearInput={clearInput} icon={false} /> */}
+                    <SelectSearch  options={userList} setOptions={setUserList} onSearch={handleSearch} placeholder='Enter mobile no.' onSelect={handleSelect} clearInput={clearSheetInput} type={'user'} />
+                    {/* <Button onClick={handleClickSearch} varient={'primary'}>Search</Button> */}
                 </div>
                 <div className="">
-                    <Select label={'Type'} name={'issuanceType'} value={issuanceType} onChange={(e) => setIssuanceType(e.target.value)} placeholder={'Select issuance typr'} >
+                    <Select label={'Type'} name={'issuanceType'} value={issuanceType} onChange={(e) => setIssuanceType(e.target.value)} placeholder={'Select issuance type'} >
                         <option value="IN_HOUSE">In house</option>
                         <option value="TAKE_AWAY">Take away</option>
                     </Select>

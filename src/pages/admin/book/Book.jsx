@@ -9,8 +9,6 @@ import Searchbar from '../../../components/searchbar/Searchbar'
 import Button from '../../../components/button/Button'
 import Table from '../../../components/table/Table'
 
-import { CiFilter } from "react-icons/ci";
-import { BsFilterLeft } from "react-icons/bs";
 import { FilterIcon } from '../../../components/icons/Icons'
 import BookPopup from '../../../components/popup/BookPopup'
 import { useSelector } from 'react-redux'
@@ -19,6 +17,7 @@ import { createBook, getAllBooks, removeBook, updateBook } from '../../../api/se
 import toast from '../../../components/toast/toast'
 import Sheet from '../../../components/sheet/Sheet'
 import BookFilterPopup from '../../../components/popup/BookFilterPopup'
+import AlertPopup from '../../../components/popup/AlertPopup'
 
 // const initialCategories = [
 //   { id: 1, name: 'History' },
@@ -66,6 +65,8 @@ const Book = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState();
 
   const openPopup = () => setIsPopupOpen(true);
   const closePopup = () => setIsPopupOpen(false);
@@ -73,11 +74,8 @@ const Book = () => {
   const openFilter = () => setIsFilterOpen(true);
   const closeFilter = () => setIsFilterOpen(false);
 
-  const toggleSheet = () => setIsSheetOpen(prev => !prev);
-
-  // useEffect(() => {
-  //   loadCategories();
-  // }, [])
+  const openAlert = () => setIsAlertOpen(true);
+  const closeAlert = () => setIsAlertOpen(false);
 
   useEffect(() => {
     loadBooks();
@@ -86,7 +84,7 @@ const Book = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       loadBooks();
-    }, 3000)
+    }, 1000)
 
     return () => clearTimeout(timeout);
   }, [search])
@@ -160,16 +158,36 @@ const Book = () => {
     }
   }
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you really want to delete?')) {
+  const handleDelete = (id) => {
+    setDeleteId(id);
+    openAlert();
+
+    // if (window.confirm('Are you really want to delete?')) {
+    //   try {
+    //     const { data } = await removeBook(id, auth.token);
+    //     await loadBooks();
+    //     toast.success(`${data?.title} is deleted`);
+    //   } catch (error) {
+    //     console.log(error);
+    //     toast.error('Failed to delete.');
+    //   }
+    // }
+  }
+
+  const handleConfirmDelete = async (confirm) => {
+    if (confirm && deleteId) {
       try {
-        const { data } = await removeBook(id, auth.token);
+        const { data } = await removeBook(deleteId, auth.token);
         await loadBooks();
         toast.success(`${data?.title} is deleted`);
+        setDeleteId(undefined);
       } catch (error) {
         console.log(error);
         toast.error('Failed to delete.');
+        setDeleteId(undefined);
       }
+    } else {
+      setDeleteId(undefined);
     }
   }
 
@@ -233,14 +251,14 @@ const Book = () => {
   return (
     <div className='book-page'>
       <div className="book-header">
-        <div className="filter-section">
+        {/* <div className="filter-section">
           <Searchbar placeholder={'Search book'} onSearch={handleSearch} />
           <div onClick={openFilter} className="filter-icon">
             <span>Filter</span>
             <FilterIcon size={20} />
           </div>
-        </div>
-
+        </div> */}
+        <Searchbar placeholder={'Search book'} onSearch={handleSearch} />
         <Button onClick={openPopup} varient={'primary'} >Add</Button>
       </div>
       <br />
@@ -253,6 +271,8 @@ const Book = () => {
 
       <BookPopup title={'Add book'} isPopupOpen={isPopupOpen} closePopup={closePopup} onAdd={handleAddNewBook} book={bookData} type='add' />
       <BookFilterPopup title={'Filter books'} isPopupOpen={isFilterOpen} closePopup={closeFilter} onFilter={handleFilter} />
+
+      <AlertPopup isOpen={isAlertOpen} onClose={closeAlert} onConfirm={handleConfirmDelete} />
     </div>
   )
 }
